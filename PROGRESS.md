@@ -33,13 +33,20 @@ Verification:
   OpenAI-compatible server: 9/9 checks passed (models, chat, Persian,
   streaming, tool calling, reasoning, `/responses`). Real-endpoint run is
   pending the user's key.
-- `docker compose up`: **not run** — Docker is not installed on this machine
-  (see D-008). Compose YAML parses and declares `db` + `app` with healthchecks.
+- `docker compose up -d --build`: pass. Both containers are healthy:
+  `torob-in-store-app-1` (`0.0.0.0:3000->3000/tcp`) and
+  `torob-in-store-db-1` (`0.0.0.0:5433->5432/tcp`, Postgres 16.15).
+- Health through the Compose stack: HTTP 200,
+  `{"status":"ok","db":{"status":"up","latencyMs":3}}`; `/` returns 200 with
+  `dir="rtl"`.
+- Docker Hub is blocked from this network (HTTP 403). Registry mirrors in
+  `/etc/docker/daemon.json` were used to pull `node:22-alpine` and
+  `postgres:16-alpine` successfully. See D-008/D-011.
+- The `ehsan` user was added to the `docker` group during setup; existing
+  shells need one re-login before running `docker` without `sudo`/`pkexec`.
 
 Known blockers / notes:
 
-- Docker is not installed on this machine (no passwordless sudo), so the
-  container stack was not executed here. See D-008.
 - `LLM_API_KEY` is empty until the user fills `.env`; the smoke test reports a
   clean skip until then.
 

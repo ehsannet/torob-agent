@@ -19,11 +19,23 @@
 - **D-007 — Provisional brand layer.** The current palette and the wordmark
   «ترب‌یار» are placeholders. Phase 6 studies Torob's real visual language
   (screenshots) and records final design tokens in `docs/design-tokens.md`.
-- **D-008 — Docker was unavailable on the development machine.** `docker` and
-  `podman` are not installed and passwordless `sudo` is not available, so the
-  image and Compose stack could not be executed here. The Dockerfile and
-  `docker-compose.yml` follow the brief and are ready to run where Docker
-  exists; local production build and `/api/health` were verified with Node.
+- **D-008 — Docker installed and verified during Phase 0.** Docker 29.1.3 and
+  Compose v2.40.3 were installed from Ubuntu packages (authorized via
+  `pkexec`). `docker compose up -d --build` succeeds and both containers report
+  healthy. The `ehsan` user was added to the `docker` group; existing login
+  sessions need a re-login to use the socket without `sudo`.
+- **D-011 — Docker Hub is blocked from this network.** Direct access to
+  `registry-1.docker.io` returns HTTP 403. `/etc/docker/daemon.json` therefore
+  lists three working Iranian mirrors (`docker.arvancloud.ir`, `focker.ir`,
+  `registry.docker.ir`). Image names in the Dockerfile stay standard
+  (`node:22-alpine`, `postgres:16-alpine`) so deployment targets can supply
+  their own registry configuration.
+- **D-012 — Alpine `libc6-compat` was removed from the image.** `apk add`
+  stalled in the build network. Next.js, `pg` (pure JS), and sharp all have
+  musl support, so the deps stage no longer installs that compatibility
+  package. The `# syntax=docker/dockerfile:1` directive was also dropped to
+  avoid pulling a BuildKit frontend image; only built-in Dockerfile features
+  are used.
 - **D-009 — `/api/health` always returns HTTP 200.** Per the brief, the payload
   carries `status: "ok" | "degraded"` and a `db` object with
   `up | down | not_configured`. The container healthcheck relies on this

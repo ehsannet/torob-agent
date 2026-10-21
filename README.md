@@ -43,6 +43,11 @@ docker compose up --build
 The app service passes `LLM_*` variables from `.env` at runtime; secrets are
 never baked into the image.
 
+If Docker Hub is blocked on your network, add a reachable registry mirror to
+`/etc/docker/daemon.json` and restart Docker (this machine uses Iranian
+mirrors; see `DECISIONS.md` D-011). After being added to the `docker` group,
+log out and back in before running `docker` without `sudo`.
+
 ## Environment variables
 
 See `.env.example`. `.env` is git-ignored and must never be committed.
