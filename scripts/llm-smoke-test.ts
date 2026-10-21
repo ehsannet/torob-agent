@@ -114,6 +114,7 @@ async function main() {
     for (const candidate of modelCandidates) {
       const result = await client.chat(base, candidate, pingMessages, 8, {
         stream: false,
+        reasoning_effort: "none",
       });
       if (result.ok) {
         chatBase = base;
@@ -169,8 +170,8 @@ async function main() {
         content: "در یک جملهٔ کوتاه فارسی بگو امروز هوا چطور است.",
       },
     ],
-    24,
-    { stream: false },
+    64,
+    { stream: false, reasoning_effort: "none" },
   );
   const persianText = client.firstContent(persian.json);
   record(

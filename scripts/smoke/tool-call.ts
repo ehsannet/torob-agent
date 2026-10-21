@@ -26,6 +26,7 @@ export async function checkToolCalling(
     96,
     {
       stream: false,
+      reasoning_effort: "none",
       tools: [
         {
           type: "function",

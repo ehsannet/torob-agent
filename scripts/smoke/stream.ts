@@ -23,6 +23,7 @@ export async function checkStreaming(
       [param]: 32,
       stream: true,
       stream_options: { include_usage: true },
+      reasoning_effort: "none",
     };
   }
 

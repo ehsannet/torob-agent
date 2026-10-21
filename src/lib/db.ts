@@ -1,15 +1,26 @@
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import * as schema from "../db/schema";
 
 export type DbCheck =
   | { status: "up"; latencyMs: number }
   | { status: "down"; latencyMs: number; error: string }
   | { status: "not_configured" };
 
-const globalForDb = globalThis as unknown as { torobPool?: Pool };
+const globalForDb = globalThis as unknown as {
+  torobPool?: Pool;
+  torobDb?: NodePgDatabase<typeof schema>;
+};
+
+function connectionString(): string {
+  const value = process.env.DATABASE_URL?.trim();
+  if (!value) throw new Error("DATABASE_URL is not set");
+  return value;
+}
 
 function createPool(): Pool {
   return new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: connectionString(),
     max: 5,
     connectionTimeoutMillis: 2_500,
     query_timeout: 2_500,
@@ -19,11 +30,25 @@ function createPool(): Pool {
   });
 }
 
-function getPool(): Pool {
+export function getPool(): Pool {
   if (!globalForDb.torobPool) {
     globalForDb.torobPool = createPool();
   }
   return globalForDb.torobPool;
+}
+
+export function getDb(): NodePgDatabase<typeof schema> {
+  if (!globalForDb.torobDb) {
+    globalForDb.torobDb = drizzle(getPool(), { schema });
+  }
+  return globalForDb.torobDb;
+}
+
+export async function closeDb(): Promise<void> {
+  const pool = globalForDb.torobPool;
+  globalForDb.torobPool = undefined;
+  globalForDb.torobDb = undefined;
+  if (pool) await pool.end();
 }
 
 function describeError(error: unknown): string {

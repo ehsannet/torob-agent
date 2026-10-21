@@ -1,0 +1,76 @@
+import type { CategoryCatalog } from "./types";
+
+export const tvCategory: CategoryCatalog = {
+  key: "tv",
+  labelFa: "تلویزیون",
+  prefix: "تلویزیون",
+  priceRange: [12_000_000, 250_000_000],
+  brands: [
+    {
+      brand: "Samsung",
+      brandFa: "سامسونگ",
+      priceFactor: 1.2,
+      models: [
+        "Neo QLED QN90D",
+        "OLED S90D",
+        "Crystal UHD DU8000",
+        "The Frame",
+        "QLED Q60D",
+        "Neo QLED QN85D",
+        "OLED S95D",
+      ],
+    },
+    {
+      brand: "LG",
+      brandFa: "ال‌جی",
+      priceFactor: 1.1,
+      models: [
+        "OLED C4",
+        "OLED G4",
+        "QNED 90",
+        "NanoCell 80",
+        "OLED B4",
+        "QNED 85",
+        "UHD UR78",
+      ],
+    },
+    {
+      brand: "Sony",
+      brandFa: "سونی",
+      priceFactor: 1.35,
+      models: [
+        "Bravia 9",
+        "Bravia 8",
+        "Bravia 7",
+        "X90L",
+        "A95L",
+        "X80L",
+        "A80L",
+      ],
+    },
+    {
+      brand: "TCL",
+      brandFa: "تی‌سی‌ال",
+      priceFactor: 0.8,
+      models: ["C855", "C755", "QM8B", "C655", "P755", "S5400", "QM7"],
+    },
+  ],
+  variants: [
+    "43 اینچ",
+    "50 اینچ",
+    "55 اینچ",
+    "58 اینچ",
+    "65 اینچ",
+    "70 اینچ",
+    "75 اینچ",
+    "85 اینچ",
+    "98 اینچ",
+  ],
+  variantSpecKey: "اندازه",
+  specOptions: {
+    "رزولوشن": ["4K UHD", "8K", "Full HD"],
+    "پنل": ["OLED", "QLED", "Mini LED", "LED"],
+    "نرخ نوسازی": ["60Hz", "120Hz", "144Hz"],
+    "سیستم‌عامل": ["Tizen", "webOS", "Google TV", "Android TV"],
+  },
+};
