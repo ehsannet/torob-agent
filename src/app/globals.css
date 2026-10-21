@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/Vazirmatn-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #fff1f2;
+  --color-brand-100: #ffe1e5;
+  --color-brand-200: #ffc7cf;
+  --color-brand-500: #ef4056;
+  --color-brand-600: #dc263f;
+  --color-brand-700: #b81b32;
+
+  --color-ink: #1c1c1e;
+  --color-muted: #6f6f78;
+  --color-line: #e9e9ee;
+  --color-page: #f7f7f9;
+  --color-surface: #ffffff;
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background:
+      radial-gradient(120% 70% at 50% -10%, var(--color-brand-50) 0%, transparent 62%),
+      var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+}

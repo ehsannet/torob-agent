@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+npm-debug.log*
+*.log
+coverage
+pgdata
+tmp
+README.md
+PROGRESS.md
+DECISIONS.md
+AGENT_BRIEF.md
