@@ -89,13 +89,58 @@ Notes:
 - `AGENT_BRIEF.md` is intentionally untracked.
 - Dates in imports must be ISO/Gregorian; Jalali parsing is deferred (D-018).
 
-## Next — Phase 2 (search and compare, no LLM)
+## Phase 2 — Search and compare (complete)
 
-- Product search over normalized columns, filters, and category browsing.
-- Group offers by base product; nearby-shop counts and price ranges.
-- Compare 2–4 products/offers with transparent differences.
-- Add trigram/full-text indexes if `pg_trgm` is available; otherwise normalized
-  `LIKE` fallback.
-- Haversine distance and RIAL→Toman normalization for comparisons.
-- Three-way labels (recorded price / last change / confirmed stock) and stale
-  price warnings in the UI.
+Done:
+
+- Search primitives: `src/lib/opening-hours.ts` (Asia/Tehran, overnight ranges,
+  closing-soon), `src/lib/geo.ts` (haversine), `src/lib/price.ts`
+  (RIAL→Toman, Persian formatting, stale-price age), `src/lib/tehran.ts`
+  (district catalog), and `src/lib/search-params.ts` (validated URL filters).
+- Search services are split into `src/server/search.ts` (orchestration),
+  `search-query.ts` (parameterized SQL, normalized `LIKE`, Persian aliases),
+  and `search-results.ts` (mapping, open/distance filtering, grouping, ranking).
+  They join the latest offer observation, convert prices to Toman, compute open
+  status/distance in JS, and group offers by base product.
+- `src/server/compare.ts` compares 2–4 products and emits a deterministic
+  recommendation with reasons; no LLM call.
+- APIs: `GET /api/search` and `GET /api/compare`, with `400` validation errors
+  and `no-store` responses.
+- UI: new home, `/search`, filter bottom sheet (category, budget, district,
+  near-me radius, open-now, Torob Pay, installments, Kalabarg, fast delivery,
+  sort), product cards, shop offer cards, compare selection bar, `/compare`
+  view, and loading/empty/error states.
+- Transparency labels are visible on every product/shop card: recorded price,
+  last price change, confirmed stock, stale-price warning, and address
+  confidence warning. `is_sample` data is labelled in the UI.
+- Docs: `docs/search.md` documents the API contract and semantics.
+
+Verification:
+
+- `npm test`: 82 tests passed across 11 files (open-now, overnight, geo,
+  Toman/RIAL, stale prices, URL filters, compare IDs, recommendation).
+- `npm run typecheck`, `npm run lint`, `npm run build`: pass.
+- Real DB/API checks: `q=iPhone 15` groups 24 offers; `q=آیفون` maps to the
+  same results; district and radius filters work; invalid filters return 400.
+- Browser flow (headless Chrome/CDP): search → open filter sheet → apply
+  category/sort → select two products → compare bar → compare page. No LLM
+  request is made.
+- Docker image rebuilt; Compose app is healthy, health payload reports
+  `phase: 2`, and `/search` plus `/api/compare` return `200`.
+
+Notes:
+
+- Search currently uses normalized `LIKE` + aliases rather than `pg_trgm`
+  GIN indexes; 4,000 offers are well within the in-process grouping budget.
+- At night the open-now filter legitimately returns zero results in Tehran.
+  Open/closed state is evaluated at request time, not cached.
+
+## Next — Phase 3 (agent, LLM)
+
+- LLM client with concurrency queue 1, cache, token/cost logging, and graceful
+  fallback when the LLM is unavailable.
+- Free-text intent parsing (budget, category, area, constraints) into the
+  existing search filters.
+- Agent tools under `src/agent/tools/` using the Phase 2 search/compare
+  services, streamed chat, and a data-grounded explanation of recommendations.
+- Keep the no-LLM search/compare flow fully usable when the model is down.

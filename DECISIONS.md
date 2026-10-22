@@ -103,3 +103,23 @@
   `reasoning_effort: "none"` for `gpt-6-luna`; routine app calls should use
   `"none"` or the lowest accepted effort. Smoke test: 9/9 with the corrected
   base URL (296 tokens).
+
+- **D-021 — Search uses SQL candidates plus in-process grouping.** Offer
+  candidates are fetched with parameterized SQL over normalized columns and a
+  small Persian alias map (for example «آیفون» → `iphone`). Open-now, location,
+  grouping, and ranking are evaluated in TypeScript because the dataset is
+  small (4,000 offers) and this keeps the behavior testable. `pg_trgm` is
+  available but GIN/trigram indexes are deferred until data volume requires
+  them; normalized `LIKE` is the documented fallback.
+- **D-022 — Location and hours semantics.** Distance is haversine; a district
+  selection matches the normalized address only, while “near me” uses the
+  browser coordinates and radius. Open status is evaluated at request time in
+  `Asia/Tehran`, supports split/overnight ranges, and marks shops closing
+  within 60 minutes as «به‌زودی بسته می‌شود». Unknown hours are distinct from
+  closed.
+- **D-023 — Compare recommendation is deterministic, not LLM.** Two to four
+  products are scored from recorded price, nearest distance, open-shop count,
+  shop count, and price freshness. The compare API returns the winner plus
+  data-grounded reasons; the UI labels it as a data rule, not an AI judgment.
+  The selected search context (query, district, or coordinates) is preserved in
+  the compare URL so distances and the back link remain meaningful.

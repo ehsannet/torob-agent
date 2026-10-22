@@ -4,9 +4,9 @@ Persian (RTL), mobile-first assistant for buying in person from shops in Tehran.
 Built with Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL, Drizzle
 ORM, and the Vercel AI SDK (added in a later phase).
 
-> Current status: **Phase 1 — data layer complete**. Search, the agent, and the
-> seller loop are implemented in the next phases. See `PROGRESS.md` and
-> `docs/data-model.md`.
+> Current status: **Phase 2 — search and compare complete, without LLM**. The
+> agent and seller loop are implemented in the next phases. See `PROGRESS.md`,
+> `docs/data-model.md`, and `docs/search.md`.
 
 ## Requirements
 
@@ -24,8 +24,8 @@ npm run db:seed
 npm run dev
 ```
 
-Open http://localhost:3000. The health endpoint is at
-http://localhost:3000/api/health.
+Open http://localhost:3000. The search UI is at `/search`; the health endpoint
+is at `/api/health`.
 
 `DATABASE_URL` must point to a reachable Postgres instance for the health
 endpoint to report `db.status = "up"`. If it is missing, the app still runs and
@@ -52,6 +52,28 @@ If Docker Hub is blocked on your network, add a reachable registry mirror to
 `/etc/docker/daemon.json` and restart Docker (this machine uses Iranian
 mirrors; see `DECISIONS.md` D-011). After being added to the `docker` group,
 log out and back in before running `docker` without `sudo`.
+
+## Search and compare (Phase 2)
+
+The search and compare flow is fully deterministic and does not call an LLM:
+
+```bash
+curl 'http://localhost:3000/api/search?q=iPhone%2015&district=vanak&openNow=1'
+curl 'http://localhost:3000/api/compare?ids=product-00031,product-00123&lat=35.7573&lng=51.4102&radiusKm=3'
+```
+
+- `GET /api/search` accepts `q`, `category`, `minPrice`, `maxPrice` (Toman),
+  `district` (slug), `lat`/`lng` + `radiusKm`, `openNow`, `torobPay`,
+  `installments`, `kalabarg`, `fastDelivery`, `sort` (`relevance`, `price`,
+  `distance`, `newest`), `page`, and `limit` (max 24).
+- Results are grouped by base product. Each offer carries the recorded price,
+  last price change, derived Toman price, open status, distance, and the latest
+  confirmed stock status (unknown until a seller observation exists).
+- `GET /api/compare` accepts 2–4 comma-separated product IDs and the same
+  location context. It returns the products plus a data-only recommendation
+  and reasons.
+- The UI exposes `/`, `/search`, and `/compare`. See `docs/search.md` for the
+  full response contract and semantics.
 
 ## Environment variables
 
