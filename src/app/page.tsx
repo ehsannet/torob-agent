@@ -65,7 +65,7 @@ export default function Home() {
         <div className="relative">
           <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700">
             <SparkIcon className="size-3" />
-            فاز ۲ فعال: جست‌وجو و مقایسهٔ شفاف
+            فاز ۳ فعال: دستیار خرید داده‌محور
           </span>
           <h1 className="mt-3 text-2xl font-black leading-[1.55]">
             قبل از رفتن،
@@ -79,6 +79,17 @@ export default function Home() {
           <div className="mt-4">
             <SearchForm />
           </div>
+
+          <Link
+            href="/assistant"
+            className="mt-3 flex items-center justify-between gap-2 rounded-xl border border-brand-200 bg-brand-50/70 px-3 py-2.5 transition hover:border-brand-500"
+          >
+            <span className="flex items-center gap-1.5 text-[10px] font-bold text-brand-700">
+              <SparkIcon className="size-3.5" />
+              نمی‌دانی چه بنویسی؟ از دستیار خرید بپرس
+            </span>
+            <ChevronLeftIcon className="size-3.5 text-brand-600" />
+          </Link>
 
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             {quickSearches.map((query) => (
@@ -191,7 +202,7 @@ export default function Home() {
       <footer className="mt-auto text-center text-[10px] leading-6 text-muted">
         <p className="flex items-center justify-center gap-1">
           <CheckIcon className="size-3 text-success" />
-          جست‌وجو و مقایسه در این فاز بدون LLM انجام می‌شود.
+          جست‌وجو و مقایسه بدون نیاز به LLM کار می‌کنند؛ دستیار در صورت خطا به جست‌وجوی مستقیم برمی‌گردد.
         </p>
         <Link
           href="/api/health"

@@ -135,12 +135,68 @@ Notes:
 - At night the open-now filter legitimately returns zero results in Tehran.
   Open/closed state is evaluated at request time, not cached.
 
-## Next — Phase 3 (agent, LLM)
+## Phase 3 — LLM agent (complete)
 
-- LLM client with concurrency queue 1, cache, token/cost logging, and graceful
-  fallback when the LLM is unavailable.
-- Free-text intent parsing (budget, category, area, constraints) into the
-  existing search filters.
-- Agent tools under `src/agent/tools/` using the Phase 2 search/compare
-  services, streamed chat, and a data-grounded explanation of recommendations.
-- Keep the no-LLM search/compare flow fully usable when the model is down.
+Done:
+
+- `ai` 7 + `@ai-sdk/openai-compatible` client (`src/agent/config.ts`) with a
+  request-body adapter from `max_tokens` to `max_completion_tokens`, usage
+  accounting, `reasoning_effort: "none"`, a 60-second total timeout, and model
+  caching. Base URL is the verified `https://ai.boxapi.ir/ai/v1`.
+- Single-slot agent queue (`src/agent/queue.ts`) with a 15-second wait timeout,
+  processed/failed counters, and lock release on success, error, or abort.
+- In-memory TTL cache (30 minutes, 100 entries) keyed by normalized message +
+  district/coordinates/radius, and an in-memory usage tracker with token counts,
+  approximate cost, $3 default budget, and `GET /api/agent/usage`.
+- Persian rule-based parser (`src/agent/tools/parse-request.ts`) for category,
+  model text, district, budget ranges, open-now, Torob Pay, installments,
+  Kalabarg, fast delivery, and sort — used by the no-LLM fallback.
+- Tool modules under `src/agent/tools/`: `search_products` (limit 8),
+  `compare_products` (2–4 IDs or 2–4 product-name queries), and `find_shops`.
+  Tools call Phase 2 services; the model never queries Postgres.
+- One `streamText` loop (max 5 steps) with per-step search disabling after a
+  successful search, tool-call progress events, streamed text, and a final
+  result assembled from tool data. `find_shops` adds shops without overwriting
+  the product result. Compare can resolve product names, avoiding accidental
+  same-brand substitutions.
+- `POST /api/agent` streams NDJSON (`status`, `delta`, `result`, `usage`,
+  `done`, `error`) with abort support. Deterministic fallback for missing key,
+  budget exhaustion, provider errors, timeouts, empty text, or missing tools.
+- `/assistant` mobile RTL UI with contextual location, quick prompts, streamed
+  answer, grounded result cards, compare/search links, cache/fallback labels,
+  abort control, and visible cost/budget. Home and search link into the
+  assistant with preserved context.
+- `docs/agent.md`; README, DECISIONS D-024…D-027, `.env.example`, Compose env
+  defaults, and `agent:smoke` / `agent:run-smoke` scripts updated.
+
+Verification:
+
+- `npm test`: 94 tests passed across 13 files (parser/filter merging, queue
+  serialization/timeout/failure, plus all prior phases).
+- `npm run typecheck`, `npm run lint`, `npm run build`: pass.
+- Real AI SDK smoke: streamed tool call succeeded with correct token usage.
+- Real agent run: Persian iPhone request → 1 grounded product; identical second
+  request returned `mode: "cache"` with no model call; empty key returned
+  `mode: "fallback"`; PS5/Xbox comparison resolved distinct products and
+  explained that Series X was unavailable rather than substituting silently.
+- Browser/CDP at `/assistant?district=vanak`: phase label, district context,
+  quick prompt, streamed/cached answer, result card, search link, usage badge,
+  and no runtime exceptions. Fresh-LLM route and cache hit both returned
+  `result`, `usage`, and `done` events.
+- Docker image rebuilt; app healthy, `/assistant`, `/search`, and `/icon.svg`
+  return 200; `/api/agent` reached the provider from inside Compose.
+
+Notes:
+
+- Cache, usage, and queue counters are process-local and reset on restart; this
+  is intentional for the single Compose app instance (D-027).
+- Usage numbers are estimates based on configurable per-million prices, not
+  provider billing records.
+- The assistant intentionally omits conversation history from the model call;
+  the API accepts a short history for a later turn model.
+- Search and compare remain fully deterministic and independent of the LLM.
+
+## Next — Phase 4 (seller loop)
+
+- Seller/availability confirmation flow on top of `seller_checks`.
+- Visit planning and follow-up UX.

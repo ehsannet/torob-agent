@@ -123,3 +123,30 @@
   data-grounded reasons; the UI labels it as a data rule, not an AI judgment.
   The selected search context (query, district, or coordinates) is preserved in
   the compare URL so distances and the back link remain meaningful.
+
+- **D-024 — BoxAPI uses the Vercel AI SDK with a request-body adapter.** The app
+  uses `ai` 7 + `@ai-sdk/openai-compatible` with provider name `boxapi`. The
+  current model rejects `max_tokens`, so the provider transforms it to
+  `max_completion_tokens`. Reasoning stays `"none"` for routine calls, matching
+  D-020. Verified with a real streamed tool call and token usage.
+
+- **D-025 — One streaming tool loop, not nested agents.** A single
+  `streamText` call may search, compare, or list shops, then writes the final
+  answer. Tool execution calls the deterministic Phase 2 services; the model
+  never queries Postgres. After a successful search, `search_products` is
+  disabled for later steps so a second search cannot replace the result shown in
+  the cards. `find_shops` adds shop details without overwriting the search.
+
+- **D-026 — Grounding and fallback are deterministic.** Prices, distances,
+  counts, open state, and stock labels in cards come from tool/database output.
+  If the LLM is unconfigured, over budget, unavailable, times out, calls no
+  tools, or returns empty text, the app runs a rule-based Persian parser and the
+  normal search service. The UI labels LLM, fallback, and cache modes. The
+  no-LLM search/compare paths remain independent of the agent.
+
+- **D-027 — Phase 3 budget, cache, and queue are process-local.** One process
+  runs a single-slot queue (15-second wait timeout), caches successful answers
+  for 30 minutes (100 entries), and tracks token/cost totals in memory. This is
+  sufficient for the single Compose app instance and avoids schema churn;
+  restarting the app resets usage and cache. Price defaults are $0.12/M input,
+  $0.58/M output, and a $3 budget, overridable by environment variables.

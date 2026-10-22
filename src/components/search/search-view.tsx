@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { assistantHref } from "@/lib/agent-links";
 import { formatNumber } from "@/lib/price";
 import { searchHref } from "@/lib/search-params";
 import type { SearchResult, SortKey } from "@/lib/search-types";
 import { cn } from "@/lib/cn";
 import { BrandHeader } from "@/components/ui/brand-header";
-import { SearchIcon, SparkIcon } from "@/components/ui/icons";
+import {
+  ChevronLeftIcon,
+  SearchIcon,
+  SparkIcon,
+} from "@/components/ui/icons";
 import { ActiveFilters } from "./active-filters";
 import { CompareBar } from "./compare-bar";
 import { CompareProvider } from "./compare-provider";
@@ -42,6 +47,16 @@ export function SearchView({ result }: { result: SearchResult }) {
       <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col gap-4 px-4 pb-28 pt-5">
         <BrandHeader />
         <SearchForm defaultValue={filters.q} compact preserve={filters} />
+        <Link
+          href={assistantHref(filters)}
+          className="flex items-center justify-between gap-2 rounded-xl border border-brand-200 bg-brand-50/60 px-3 py-2 text-[10px] font-bold text-brand-700"
+        >
+          <span className="flex items-center gap-1.5">
+            <SparkIcon className="size-3.5" />
+            همین جست‌وجو را از دستیار بپرس
+          </span>
+          <ChevronLeftIcon className="size-3" />
+        </Link>
 
         <div className="flex items-center gap-2">
           <FilterSheet

@@ -2,11 +2,12 @@
 
 Persian (RTL), mobile-first assistant for buying in person from shops in Tehran.
 Built with Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL, Drizzle
-ORM, and the Vercel AI SDK (added in a later phase).
+ORM, and the Vercel AI SDK.
 
-> Current status: **Phase 2 — search and compare complete, without LLM**. The
-> agent and seller loop are implemented in the next phases. See `PROGRESS.md`,
-> `docs/data-model.md`, and `docs/search.md`.
+> Current status: **Phase 3 — data-grounded LLM agent complete**. Search and
+> compare remain deterministic and usable without the LLM; the agent adds
+> free-text intent parsing, tool calls, streaming, usage budgets, cache, and
+> fallback. See `PROGRESS.md`, `docs/search.md`, and `docs/agent.md`.
 
 ## Requirements
 
@@ -24,8 +25,8 @@ npm run db:seed
 npm run dev
 ```
 
-Open http://localhost:3000. The search UI is at `/search`; the health endpoint
-is at `/api/health`.
+Open http://localhost:3000. Search is at `/search`, the assistant at
+`/assistant`, and the health endpoint at `/api/health`.
 
 `DATABASE_URL` must point to a reachable Postgres instance for the health
 endpoint to report `db.status = "up"`. If it is missing, the app still runs and
@@ -75,6 +76,23 @@ curl 'http://localhost:3000/api/compare?ids=product-00031,product-00123&lat=35.7
 - The UI exposes `/`, `/search`, and `/compare`. See `docs/search.md` for the
   full response contract and semantics.
 
+## Assistant (Phase 3)
+
+`/assistant` sends free text to `POST /api/agent` and renders a streamed answer
+plus result cards built from the same search/compare services. The response is
+NDJSON (`status`, `delta`, `result`, `usage`, `done`, `error`).
+
+- One model call may use `search_products`, `compare_products`, and
+  `find_shops`; tools call the deterministic catalog, never the reverse.
+- A single-slot queue serializes agent requests. Successful answers are cached
+  for 30 minutes. Usage, approximate cost, and the $3 default budget are visible
+  at `GET /api/agent/usage` and in the UI.
+- If the key is missing, the provider fails, the request times out, or the
+  budget is exhausted, a Persian rule-based fallback searches the catalog and
+  labels the answer accordingly. Search and compare never depend on the LLM.
+- See `docs/agent.md` for the request/event contract, tools, configuration, and
+  limitations.
+
 ## Environment variables
 
 See `.env.example`. `.env` is git-ignored and must never be committed.
@@ -86,6 +104,9 @@ See `.env.example`. `.env` is git-ignored and must never be committed.
 | `LLM_API_KEY` | Server-side only LLM key |
 | `LLM_MODEL` | Default cheap model (`openai/gpt-6-luna`) |
 | `LLM_MODEL_HARD` | Optional stronger model (`openai/gpt-6-sol`) |
+| `LLM_INPUT_PRICE_PER_MILLION` | Cost estimate input price, default `0.12` |
+| `LLM_OUTPUT_PRICE_PER_MILLION` | Cost estimate output price, default `0.58` |
+| `LLM_BUDGET_USD` | Agent cost budget, default `3` |
 | `EMBEDDING_MODEL` | Embedding model for later phases |
 | `APP_BASE_URL` | Public base URL for seller links |
 | `DEMO_MODE` | Enables deterministic demo behavior later |
@@ -102,6 +123,8 @@ See `.env.example`. `.env` is git-ignored and must never be committed.
 | `npm run lint` | ESLint |
 | `npm test` | Vitest suite |
 | `npm run smoke` | LLM capability smoke test (reads `.env`, never prints the key) |
+| `npm run agent:smoke` | AI SDK provider + streamed tool-call check |
+| `npm run agent:run-smoke` | End-to-end agent fresh answer + cache hit (needs DB) |
 | `npm run db:migrate` | Apply migrations with the project runner |
 | `npm run db:seed` | Regenerate the sample catalog |
 | `npm run db:seed:if-empty` | Seed only when the catalog is empty |
@@ -132,4 +155,6 @@ Verified results (Phase 1): 9/9 checks passed with
 `/chat/completions` require `reasoning_effort: "none"`; see D-020.
 
 The app remains usable without the LLM by design; chat is a convenience, not a
-dependency.
+dependency. For the Phase 3 SDK path, `npm run agent:smoke` verifies tool calling
+and usage through the configured provider; `npm run agent:run-smoke` exercises
+the real search tool and cache.

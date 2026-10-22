@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ChevronLeftIcon } from "./icons";
+import { ChevronLeftIcon, SparkIcon } from "./icons";
 
 type BrandHeaderProps = {
   backHref?: string;
@@ -39,8 +39,15 @@ export function BrandHeader({
       </div>
       <div className="flex items-center gap-2">
         {children}
+        <Link
+          href="/assistant"
+          className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[10px] font-bold text-brand-700"
+        >
+          <SparkIcon className="size-3" />
+          دستیار
+        </Link>
         <span className="rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-brand-700">
-          فاز ۲
+          فاز ۳
         </span>
       </div>
     </header>

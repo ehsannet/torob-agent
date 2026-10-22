@@ -12,7 +12,7 @@ export async function GET() {
     {
       status: db.status === "up" ? "ok" : "degraded",
       app: "torob-in-store-assistant",
-      phase: 2,
+      phase: 3,
       db,
       timestamp: new Date().toISOString(),
       responseTimeMs: Date.now() - startedAt,

@@ -33,9 +33,12 @@ services:
       DATABASE_URL: postgresql://torob:${POSTGRES_PASSWORD:-torob_local_dev}@db:5432/torob
       LLM_BASE_URL: ${LLM_BASE_URL:-}
       LLM_API_KEY: ${LLM_API_KEY:-}
-      LLM_MODEL: ${LLM_MODEL:-gpt-6-luna}
+      LLM_MODEL: ${LLM_MODEL:-openai/gpt-6-luna}
       LLM_MODEL_HARD: ${LLM_MODEL_HARD:-gpt-6-sol}
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+      LLM_INPUT_PRICE_PER_MILLION: ${LLM_INPUT_PRICE_PER_MILLION:-0.12}
+      LLM_OUTPUT_PRICE_PER_MILLION: ${LLM_OUTPUT_PRICE_PER_MILLION:-0.58}
+      LLM_BUDGET_USD: ${LLM_BUDGET_USD:-3}
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
       DEMO_MODE: ${DEMO_MODE:-true}
       SEED_ON_START: ${SEED_ON_START:-true}

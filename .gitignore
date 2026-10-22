@@ -32,3 +32,34 @@ pnpm-debug.log*
 
 # os
 .DS_Store
+# dependencies
+node_modules/
+.pnp*
+
+# next.js / build
+.next/
+out/
+dist/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# secrets (NEVER commit)
+.env
+.env.*
+!.env.example
+
+# real dataset (large, not ours to publish)
+data/raw/
+
+# local database volumes / logs
+pgdata/
+*.log
+npm-debug.log*
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
