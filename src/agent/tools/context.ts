@@ -9,6 +9,7 @@ import type {
 
 export type AgentToolContext = {
   baseFilters: SearchFilters;
+  hints: SearchFilters;
   search?: {
     filters: SearchFilters;
     result: SearchResult;

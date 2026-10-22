@@ -21,8 +21,10 @@ export function createFindShopsTool(context: AgentToolContext) {
       const filters = mergeAgentFilters(
         {
           q: input.query,
-          district: input.district,
-          openNow: input.openNow,
+          district:
+            input.district ?? context.search?.filters.district ?? undefined,
+          openNow:
+            input.openNow ?? context.search?.filters.openNow ?? undefined,
           sort: input.sort ?? "distance",
         },
         context.baseFilters,

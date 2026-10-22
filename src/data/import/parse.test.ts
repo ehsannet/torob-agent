@@ -3,6 +3,8 @@ import {
   asBoolean,
   asInteger,
   asNumber,
+  asRecord,
+  asString,
   asStringArray,
   parseHours,
   parsePrice,
@@ -72,6 +74,18 @@ describe("asStringArray", () => {
   });
 });
 
+describe("asString and asRecord", () => {
+  it("normalizes export nulls and key/value spec arrays", () => {
+    expect(asString("null")).toBeNull();
+    expect(
+      asRecord([
+        { key: "حافظه", section: "مشخصات کلی", value: "۲۵۶GB" },
+        { key: "رنگ", section: "مشخصات کلی", value: "مشکی" },
+      ]),
+    ).toEqual({ "حافظه": "۲۵۶GB", "رنگ": "مشکی" });
+  });
+});
+
 describe("parseHours", () => {
   it("parses English keys and range objects", () => {
     expect(
@@ -114,9 +128,25 @@ describe("parseHours", () => {
     });
   });
 
-  it("rejects invalid hours", () => {
+  it("parses Torob shift wrappers and ignores seconds", () => {
+    expect(
+      parseHours({
+        sat: {
+          status: "declared",
+          shifts: [{ start_time: "10:00:00", end_time: "19:00:00" }],
+        },
+        fri: { status: "closed", shifts: [] },
+      }),
+    ).toEqual({
+      saturday: [{ open: "10:00", close: "19:00" }],
+      friday: [],
+    });
+  });
+
+  it("rejects invalid hours and empty objects", () => {
     expect(parseHours({ saturday: "25:00-21:00" })).toBeNull();
     expect(parseHours("{")).toBeNull();
     expect(parseHours("not-json")).toBeNull();
+    expect(parseHours({})).toBeNull();
   });
 });

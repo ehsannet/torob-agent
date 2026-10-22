@@ -94,7 +94,7 @@ export function CompareView({ result, filters }: CompareViewProps) {
       </div>
 
       <footer className="text-center text-[10px] leading-6 text-muted">
-        دادهٔ نمونه است؛ پیش از رفتن، قیمت و موجودی را از فروشنده بپرس.
+        قیمت‌ها ثبت‌شده‌اند؛ پیش از رفتن، قیمت و موجودی را از فروشنده بپرس.
       </footer>
     </main>
   );

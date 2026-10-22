@@ -70,6 +70,78 @@ describe("mapRawCatalog", () => {
     expect(offer.lastPriceChangeAt?.toISOString()).toBe("2026-10-01T10:00:00.000Z");
   });
 
+
+  it("maps the real Torob CSV columns", () => {
+    const catalog = mapRawCatalog({
+      shops: [
+        {
+          shop_id: "shop-1",
+          name: "فروشگاه واقعی",
+          address: "خیابان جمهوری، پاساژ علالدین، طبقه ۶، واحد ۶۲۲",
+          category_names: '["گوشی موبایل","لوازم جانبی موبایل"]',
+          contacts:
+            '[{"channel":"phone","display_number":"۰۲۱۲۶۴۶۷۱۸۰"}]',
+          location_label: "شیخ هادی",
+          instagram:
+            '{"handle":"shop","profile_url":"https://instagram.com/shop"}',
+          website_url: "https://shop.example",
+          supports_fast_delivery: "true",
+          payment_options:
+            '[{"provider_name":"ترب‌پی","channel":"unknown"}]',
+          weekly_hours:
+            '{"sat":{"status":"declared","shifts":[{"start_time":"10:00:00","end_time":"19:00:00"}]},"fri":{"status":"closed","shifts":[]}}',
+          lat: "35.69",
+          lon: "51.40",
+        },
+      ],
+      products: [
+        {
+          product_id: "product-1",
+          persian_title: "گوشی موبایل سامسونگ",
+          brand_name: "سامسونگ",
+          category_name: "گوشی موبایل",
+          image_urls: '["https://image.torob.com/a.jpg"]',
+          specs:
+            '[{"key":"حافظه","section":"مشخصات کلی","value":"۲۵۶GB"},{"key":"رنگ","section":"مشخصات کلی","value":"مشکی"}]',
+        },
+      ],
+      offers: [
+        {
+          offer_id: "offer-1",
+          shop_id: "shop-1",
+          product_id: "product-1",
+          price_toman: "25000000",
+          last_price_changed_at: "2026-10-01T10:00:00Z",
+          warranty: '{"provider":"شرکتی","period_months":18}',
+        },
+      ],
+    });
+
+    const shop = catalog.shops[0];
+    expect(shop.activityCategory).toBe("گوشی موبایل");
+    expect(shop.phone).toBe("۰۲۱۲۶۴۶۷۱۸۰");
+    expect(shop.landmark).toBe("شیخ هادی");
+    expect(shop.instagram).toBe("https://instagram.com/shop");
+    expect(shop.website).toBe("https://shop.example");
+    expect(shop.acceptsTorobPay).toBe(true);
+    expect(shop.hasFastDelivery).toBe(true);
+    expect(shop.weeklyHours).toEqual({
+      saturday: [{ open: "10:00", close: "19:00" }],
+      friday: [],
+    });
+
+    const product = catalog.products[0];
+    expect(product.brand).toBe("سامسونگ");
+    expect(product.category).toBe("گوشی موبایل");
+    expect(product.specs).toEqual({ "حافظه": "۲۵۶GB", "رنگ": "مشکی" });
+
+    const offer = catalog.offers[0];
+    expect(offer.price).toBe(25_000_000);
+    expect(offer.warrantyProvider).toBe("شرکتی");
+    expect(offer.warrantyDurationMonths).toBe(18);
+    expect(offer.lastPriceChangeAt?.toISOString()).toBe("2026-10-01T10:00:00.000Z");
+  });
+
   it("defaults a missing address to a low-confidence placeholder", () => {
     const catalog = mapRawCatalog({
       shops: [{ id: "s", name: "فروشگاه" }],

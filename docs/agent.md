@@ -53,9 +53,10 @@ resets when the container restarts.
    waiters time out after 15 seconds.
 3. Budget check. If exhausted, go directly to deterministic fallback.
 4. One `streamText` call with `search_products`, `compare_products`, and
-   `find_shops` tools (max 5 steps). After a successful search, only compare and
-   shop-list tools remain active so the model cannot replace the result with a
-   second search.
+   `find_shops` tools (max 5 steps). Deterministic parser hints fill category,
+   district, budget, and flag fields the model omits. After a successful search,
+   only compare and shop-list tools remain active; a repeated search call reuses
+   the first result so cards cannot be replaced.
 5. Tool calls use the Phase 2 services. The final `AgentResult` is assembled
    from the successful tool context, not from the model text.
 6. Successful LLM answers are cached for 30 minutes (max 100 entries). Errors,

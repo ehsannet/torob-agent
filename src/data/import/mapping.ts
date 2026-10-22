@@ -19,6 +19,7 @@ const SHOP_ID = ["id", "shop_id", "shopId", "code", "کد", "کد فروشگاه
 const SHOP_NAME = ["name", "shop_name", "shopName", "title", "نام", "نام فروشگاه"] as const;
 const SHOP_ADDRESS = ["address", "address_text", "addressText", "آدرس", "نشانی"] as const;
 const SHOP_BUSINESS_TYPE = ["business_type", "businessType", "نوع کسب‌وکار"] as const;
+const SHOP_CATEGORY_NAMES = ["category_names", "categoryNames", "دسته‌ها"] as const;
 const SHOP_ACTIVITY = ["activity_category", "activityCategory", "دسته فعالیت", "حوزه فعالیت"] as const;
 const SHOP_DESCRIPTION = ["description", "about", "توضیحات", "درباره"] as const;
 const SHOP_IMAGES = ["images", "image_urls", "تصاویر"] as const;
@@ -28,28 +29,45 @@ const SHOP_MALL = ["mall_name", "mallName", "mall", "پاساژ", "نام پاس
 const SHOP_FLOOR = ["floor", "طبقه"] as const;
 const SHOP_UNIT = ["unit", "واحد"] as const;
 const SHOP_STREET = ["street", "خیابان"] as const;
-const SHOP_LANDMARK = ["landmark", "نشانه"] as const;
+const SHOP_LANDMARK = ["landmark", "location_label", "locationLabel", "نشانه"] as const;
 const SHOP_LOCATION_NOTES = ["location_notes", "locationNotes", "توضیح موقعیت"] as const;
 const SHOP_CONFIDENCE = ["address_confidence", "addressConfidence", "اطمینان آدرس"] as const;
 const SHOP_LAT = ["latitude", "lat", "عرض جغرافیایی"] as const;
 const SHOP_LNG = ["longitude", "lng", "lon", "طول جغرافیایی"] as const;
 const SHOP_HOURS = ["weekly_hours", "weeklyHours", "hours", "ساعت کاری", "ساعات کاری"] as const;
+const SHOP_CONTACTS = ["contacts", "contact_channels", "contactChannels"] as const;
 const SHOP_PHONE = ["phone", "telephone", "تلفن"] as const;
 const SHOP_WHATSAPP = ["whatsapp", "واتساپ"] as const;
 const SHOP_BALE = ["bale", "بله"] as const;
 const SHOP_INSTAGRAM = ["instagram", "اینستاگرام"] as const;
-const SHOP_WEBSITE = ["website", "site", "وبسایت"] as const;
+const SHOP_WEBSITE = ["website", "website_url", "websiteUrl", "site", "وبسایت"] as const;
 const SHOP_TOROB_PAY = ["accepts_torob_pay", "acceptsTorobPay", "پرداخت توروب"] as const;
+const SHOP_PAYMENT_OPTIONS = ["payment_options", "paymentOptions", "روش‌های پرداخت"] as const;
 const SHOP_INSTALLMENTS = ["offers_installments", "offersInstallments", "اقساط"] as const;
 const SHOP_KALABARG = ["accepts_kalabarg", "acceptsKalabarg", "کالابرگ"] as const;
-const SHOP_FAST_DELIVERY = ["has_fast_delivery", "hasFastDelivery", "ارسال سریع"] as const;
+const SHOP_FAST_DELIVERY = [
+  "has_fast_delivery",
+  "hasFastDelivery",
+  "supports_fast_delivery",
+  "supportsFastDelivery",
+  "ارسال سریع",
+] as const;
 const SHOP_SAMPLE = ["is_sample", "isSample", "داده نمونه"] as const;
 
 const PRODUCT_ID = ["id", "product_id", "productId", "code", "کد محصول"] as const;
-const PRODUCT_TITLE = ["title_fa", "titleFa", "title", "name", "نام", "عنوان"] as const;
+const PRODUCT_TITLE = [
+  "title_fa",
+  "persian_title",
+  "persianTitle",
+  "titleFa",
+  "title",
+  "name",
+  "نام",
+  "عنوان",
+] as const;
 const PRODUCT_TITLE_EN = ["title_en", "titleEn", "english_title", "عنوان انگلیسی"] as const;
-const PRODUCT_BRAND = ["brand", "برند"] as const;
-const PRODUCT_CATEGORY = ["category", "دسته", "دسته‌بندی"] as const;
+const PRODUCT_BRAND = ["brand", "brand_name", "brandName", "برند"] as const;
+const PRODUCT_CATEGORY = ["category", "category_name", "categoryName", "دسته", "دسته‌بندی"] as const;
 const PRODUCT_SPECS = ["specs", "specifications", "مشخصات"] as const;
 const PRODUCT_DESCRIPTION = ["description", "توضیحات"] as const;
 const PRODUCT_IMAGES = ["images", "image_urls", "تصاویر"] as const;
@@ -59,10 +77,15 @@ const OFFER_ID = ["id", "offer_id", "offerId", "code", "کد آفر"] as const;
 const OFFER_SHOP = ["shop_id", "shopId", "shop", "کد فروشگاه"] as const;
 const OFFER_PRODUCT = ["product_id", "productId", "product", "کد محصول"] as const;
 const OFFER_TITLE = ["seller_title", "sellerTitle", "title", "عنوان فروشنده"] as const;
-const OFFER_DESCRIPTION = ["seller_description", "sellerDescription", "توضیحات فروشنده"] as const;
-const OFFER_PRICE = ["price", "قیمت"] as const;
+const OFFER_DESCRIPTION = [
+  "seller_description",
+  "sellerDescription",
+  "description",
+  "توضیحات فروشنده",
+] as const;
+const OFFER_PRICE = ["price", "price_toman", "priceToman", "قیمت"] as const;
 const OFFER_PRICE_UNIT = ["price_unit", "priceUnit", "currency", "واحد قیمت"] as const;
-const OFFER_WARRANTY = ["warranty_provider", "warrantyProvider", "گارانتی"] as const;
+const OFFER_WARRANTY = ["warranty_provider", "warrantyProvider", "warranty", "گارانتی"] as const;
 const OFFER_WARRANTY_MONTHS = [
   "warranty_duration_months",
   "warrantyDurationMonths",
@@ -71,10 +94,71 @@ const OFFER_WARRANTY_MONTHS = [
 const OFFER_LAST_CHANGE = [
   "last_price_change_at",
   "lastPriceChangeAt",
+  "last_price_changed_at",
+  "lastPriceChangedAt",
   "last_price_change",
   "آخرین تغییر قیمت",
 ] as const;
 const OFFER_SAMPLE = ["is_sample", "isSample", "داده نمونه"] as const;
+
+function parseJsonValue(value: unknown): unknown {
+  if (typeof value !== "string") return value;
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    return value;
+  }
+}
+
+function firstCategory(value: unknown): string | null {
+  const parsed = parseJsonValue(value);
+  if (Array.isArray(parsed)) return asString(parsed[0]);
+  return asString(parsed);
+}
+
+function phoneFromContacts(value: unknown): string | null {
+  const parsed = parseJsonValue(value);
+  if (!Array.isArray(parsed)) return asString(parsed);
+  for (const item of parsed) {
+    if (typeof item !== "object" || item === null || Array.isArray(item)) continue;
+    const contact = item as Record<string, unknown>;
+    if (asString(contact.channel) !== "phone") continue;
+    return asString(contact.display_number) ?? asString(contact.number);
+  }
+  return null;
+}
+
+function instagramProfile(value: unknown): string | null {
+  const parsed = parseJsonValue(value);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    return asString(parsed);
+  }
+  const profile = parsed as Record<string, unknown>;
+  return asString(profile.profile_url) ?? asString(profile.handle);
+}
+
+function paymentAcceptsTorobPay(value: unknown): boolean | null {
+  const parsed = parseJsonValue(value);
+  if (!Array.isArray(parsed)) return null;
+  for (const item of parsed) {
+    if (typeof item !== "object" || item === null || Array.isArray(item)) continue;
+    const name = asString((item as Record<string, unknown>).provider_name);
+    if (name && normalizePersian(name).includes("ترب پی")) return true;
+  }
+  return false;
+}
+
+function warrantyInfo(value: unknown): { provider: string | null; months: number | null } {
+  const parsed = parseJsonValue(value);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    return { provider: asString(parsed), months: null };
+  }
+  const record = parsed as Record<string, unknown>;
+  return {
+    provider: asString(record.provider) ?? asString(record.provider_name),
+    months: asInteger(record.period_months) ?? asInteger(record.duration_months),
+  };
+}
 
 function read(row: Row, aliases: readonly string[]): unknown {
   for (const alias of aliases) {
@@ -119,7 +203,9 @@ export function mapShopRow(row: Row, index: number): NewShop {
     name,
     nameNormalized: normalizePersian(name),
     businessType: asString(read(row, SHOP_BUSINESS_TYPE)),
-    activityCategory: asString(read(row, SHOP_ACTIVITY)),
+    activityCategory:
+      firstCategory(read(row, SHOP_CATEGORY_NAMES)) ??
+      asString(read(row, SHOP_ACTIVITY)),
     description: asString(read(row, SHOP_DESCRIPTION)),
     images: asStringArray(read(row, SHOP_IMAGES)),
     torobHistory: asString(read(row, SHOP_HISTORY)),
@@ -136,12 +222,17 @@ export function mapShopRow(row: Row, index: number): NewShop {
     latitude,
     longitude,
     weeklyHours: parseHours(read(row, SHOP_HOURS)),
-    phone: asString(read(row, SHOP_PHONE)),
+    phone:
+      phoneFromContacts(read(row, SHOP_CONTACTS)) ??
+      asString(read(row, SHOP_PHONE)),
     whatsapp: asString(read(row, SHOP_WHATSAPP)),
     bale: asString(read(row, SHOP_BALE)),
-    instagram: asString(read(row, SHOP_INSTAGRAM)),
+    instagram: instagramProfile(read(row, SHOP_INSTAGRAM)),
     website: asString(read(row, SHOP_WEBSITE)),
-    acceptsTorobPay: asBoolean(read(row, SHOP_TOROB_PAY)) ?? false,
+    acceptsTorobPay:
+      asBoolean(read(row, SHOP_TOROB_PAY)) ??
+      paymentAcceptsTorobPay(read(row, SHOP_PAYMENT_OPTIONS)) ??
+      false,
     offersInstallments: asBoolean(read(row, SHOP_INSTALLMENTS)) ?? false,
     acceptsKalabarg: asBoolean(read(row, SHOP_KALABARG)) ?? false,
     hasFastDelivery: asBoolean(read(row, SHOP_FAST_DELIVERY)) ?? false,
@@ -149,9 +240,18 @@ export function mapShopRow(row: Row, index: number): NewShop {
   };
 }
 
-export function mapProductRow(row: Row, index: number): NewProduct {
+export function mapProductRow(
+  row: Row,
+  index: number,
+  options: { allowMissingTitle?: boolean } = {},
+): NewProduct {
   const context = `products[${index}]`;
-  const titleFa = requiredString(row, PRODUCT_TITLE, context);
+  const category = asString(read(row, PRODUCT_CATEGORY)) ?? "نامشخص";
+  const rawTitle = asString(read(row, PRODUCT_TITLE));
+  const titleFa =
+    rawTitle ??
+    (options.allowMissingTitle ? `${category} (بدون عنوان)` : null);
+  if (!titleFa) throw new Error(`${context}: missing required field (${PRODUCT_TITLE[0]})`);
   const brand = asString(read(row, PRODUCT_BRAND));
 
   return {
@@ -161,7 +261,7 @@ export function mapProductRow(row: Row, index: number): NewProduct {
     titleEn: asString(read(row, PRODUCT_TITLE_EN)),
     brand,
     brandNormalized: brand ? normalizePersian(brand) : null,
-    category: asString(read(row, PRODUCT_CATEGORY)) ?? "نامشخص",
+    category,
     specs: asRecord(read(row, PRODUCT_SPECS)),
     description: asString(read(row, PRODUCT_DESCRIPTION)),
     images: asStringArray(read(row, PRODUCT_IMAGES)),
@@ -178,6 +278,7 @@ export function mapOfferRow(row: Row, index: number): NewOffer {
     .filter((value) => value !== undefined)
     .join(" ");
   const price = parsePrice(priceText);
+  const warranty = warrantyInfo(read(row, OFFER_WARRANTY));
 
   return {
     id: asString(read(row, OFFER_ID)) ?? `import-offer-${String(index + 1).padStart(5, "0")}`,
@@ -188,8 +289,9 @@ export function mapOfferRow(row: Row, index: number): NewOffer {
     sellerDescription: asString(read(row, OFFER_DESCRIPTION)),
     price: price.amount,
     priceUnit: price.unit,
-    warrantyProvider: asString(read(row, OFFER_WARRANTY)),
-    warrantyDurationMonths: asInteger(read(row, OFFER_WARRANTY_MONTHS)),
+    warrantyProvider: warranty.provider,
+    warrantyDurationMonths:
+      asInteger(read(row, OFFER_WARRANTY_MONTHS)) ?? warranty.months,
     lastPriceChangeAt: asDate(read(row, OFFER_LAST_CHANGE)),
     isSample: sampleFlag(row, OFFER_SAMPLE),
   };
@@ -220,7 +322,9 @@ export function mapRawCatalog(input: unknown): CatalogData {
   if (!isRow(input)) throw new Error("dataset must be a JSON object");
 
   const shops = rows(input.shops, "shops").map(mapShopRow);
-  const products = rows(input.products, "products").map(mapProductRow);
+  const products = rows(input.products, "products").map((row, index) =>
+    mapProductRow(row, index),
+  );
   const offers = rows(input.offers, "offers").map(mapOfferRow);
 
   assertUnique(shops.map((shop) => shop.id), "shop");

@@ -16,14 +16,14 @@ import { CATEGORY_ACCENTS, categoryInitial } from "@/lib/ui-labels";
 import { cn } from "@/lib/cn";
 
 const categories = [
-  { label: "موبایل", hint: "گوشی و لوازم" },
-  { label: "لپ‌تاپ", hint: "اداری و گیمینگ" },
-  { label: "هدفون و هندزفری", hint: "بی‌سیم و سیمی" },
-  { label: "ساعت هوشمند", hint: "اسپرت و روزمره" },
-  { label: "کنسول بازی", hint: "خانگی و دستی" },
+  { label: "گوشی موبایل", hint: "اپل، سامسونگ و شیائومی" },
+  { label: "لپ تاپ و نوت بوک", hint: "اداری و گیمینگ" },
+  { label: "هدفون، هدست و هندزفری", hint: "بی‌سیم و سیمی" },
+  { label: "ساعت و مچ بند هوشمند", hint: "اسپرت و روزمره" },
+  { label: "کنسول بازی  PS5", hint: "خانگی و دستی" },
   { label: "تلویزیون", hint: "هوشمند و ۴K" },
-  { label: "دوربین", hint: "عکاسی و ویدیو" },
-  { label: "لوازم خانگی", hint: "آشپزخانه و نظافت" },
+  { label: "دوربین عکاسی و فیلمبرداری", hint: "حرفه‌ای و خانگی" },
+  { label: "دوربین مدار بسته", hint: "امنیت و نظارت" },
 ];
 
 const quickSearches = ["iPhone 15", "گوشی سامسونگ", "هدفون", "لپ‌تاپ"];
@@ -65,7 +65,7 @@ export default function Home() {
         <div className="relative">
           <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700">
             <SparkIcon className="size-3" />
-            فاز ۳ فعال: دستیار خرید داده‌محور
+            دادهٔ واقعی ترب: ۶٬۴۷۶ فروشگاه
           </span>
           <h1 className="mt-3 text-2xl font-black leading-[1.55]">
             قبل از رفتن،
@@ -189,11 +189,12 @@ export default function Home() {
       <section className="rounded-card border border-warning/20 bg-warning/5 p-3.5">
         <p className="flex items-center gap-1.5 text-[11px] font-bold text-warning">
           <PinIcon className="size-3.5" />
-          این نسخه با دادهٔ نمونه کار می‌کند
+          دادهٔ واقعی ترب در حال استفاده است
         </p>
         <p className="mt-1.5 text-[10px] leading-6 text-muted">
-          ۳۰۰ فروشگاه، ۲٬۰۰۰ محصول و ۴٬۰۰۰ آفر نمونه. قیمت‌ها، ساعت‌ها و
-          مختصات ساختگی‌اند و تا تأیید فروشنده قابل اتکا نیستند.
+          ۶٬۴۷۶ فروشگاه، ۲۲۵٬۹۰۳ محصول و ۳۳۱٬۵۰۶ آفر. قیمت‌های ثبت‌شده ممکن
+          است قدیمی باشند؛ ۱۵٬۵۹۱ آفر قیمت ندارد و تا تأیید فروشنده قابل اتکا
+          نیستند.
         </p>
       </section>
 

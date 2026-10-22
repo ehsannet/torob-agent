@@ -19,14 +19,19 @@
     "db:seed": "node --env-file-if-exists=.env --import tsx src/db/seed.ts --reset",
     "db:seed:if-empty": "node --env-file-if-exists=.env --import tsx src/db/seed.ts --if-empty",
     "db:report": "node --env-file-if-exists=.env --import tsx src/db/report.ts",
-    "db:import": "node --env-file-if-exists=.env --import tsx scripts/import-dataset.ts",
+    "db:import": "npm run import --",
     "build:db": "esbuild src/db/seed.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/seed.mjs --external:pg --external:pg-native",
     "agent:smoke": "node --env-file-if-exists=.env --import tsx scripts/agent-smoke.ts",
-    "agent:run-smoke": "node --env-file-if-exists=.env --import tsx scripts/agent-run-smoke.ts"
+    "agent:run-smoke": "node --env-file-if-exists=.env --import tsx scripts/agent-run-smoke.ts",
+    "data:profile": "node --env-file-if-exists=.env --import tsx scripts/profile-dataset.ts",
+    "import": "node scripts/run-import.mjs",
+    "build:import": "esbuild scripts/import-dataset.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/import.mjs --external:pg --external:pg-native",
+    "data:quality": "node --env-file-if-exists=.env --import tsx scripts/data-quality-report.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.75",
     "ai": "^7.0.148",
+    "csv-parse": "^6.2.1",
     "drizzle-orm": "0.45.4",
     "next": "16.4.2",
     "pg": "8.23.1",

@@ -133,9 +133,11 @@
 - **D-025 — One streaming tool loop, not nested agents.** A single
   `streamText` call may search, compare, or list shops, then writes the final
   answer. Tool execution calls the deterministic Phase 2 services; the model
-  never queries Postgres. After a successful search, `search_products` is
-  disabled for later steps so a second search cannot replace the result shown in
-  the cards. `find_shops` adds shop details without overwriting the search.
+  never queries Postgres. Deterministic parser hints backfill category,
+  district, budget, and flag fields the model omits; after a successful search,
+  `search_products` is disabled for later steps and repeated calls reuse the
+  first result, so a second search cannot replace the cards. `find_shops` adds
+  shop details without overwriting the search.
 
 - **D-026 — Grounding and fallback are deterministic.** Prices, distances,
   counts, open state, and stock labels in cards come from tool/database output.
@@ -150,3 +152,30 @@
   sufficient for the single Compose app instance and avoids schema churn;
   restarting the app resets usage and cache. Price defaults are $0.12/M input,
   $0.58/M output, and a $3 budget, overridable by environment variables.
+
+- **D-028 — Real Torob CSV streaming importer (supersedes the D-018 CLI).**
+  `npm run import` resolves `--dir`/`DATA_DIR` first, then `IMPORT_URL` (base URL
+  or `.zip`), then the local `data/raw/torob-dataset/torob-dataset` folder. It
+  streams the three CSVs through `csv-parse`, maps real aliases, inserts in
+  batches inside one transaction after truncating the catalog, and verifies the
+  final counts before commit. The Docker runner bundles `dist/import.mjs` and
+  installs `unzip`. The legacy JSON `mapRawCatalog` remains for tests only.
+  Import is destructive by replacement; observations and seller checks are
+  cleared.
+
+- **D-029 — Real-data search uses a grouped SQL browse page.** Empty
+  query/category searches run a grouped `LIMIT/OFFSET` query in Postgres and
+  fetch offers only for the page's product IDs. Open-now and district/radius
+  filters are applied in SQL before grouping; exact haversine/open-state checks
+  remain in TypeScript. Product cards return up to six offers, but aggregate
+  counts cover all matching offers. Category facets are capped at 40 plus the
+  selected label. This replaces the D-021 assumption that 4,000 offers fit
+  comfortably in process memory.
+
+- **D-030 — Imported data quality is surfaced, not silently repaired.** Real
+  source gaps are preserved where safe: null prices/dates/hours/categories,
+  duplicate shop/product offers, and empty specs remain visible. Prices above
+  the PostgreSQL integer limit are converted to `NULL` and counted; the two
+  source products without titles receive an explicit `(بدون عنوان)` placeholder
+  so their offers are not orphaned. Generated reports are
+  `docs/dataset-profile.md` and `docs/data-quality-report.md`.

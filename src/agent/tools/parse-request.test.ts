@@ -1,14 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { contextToBaseFilters, mergeAgentFilters } from "../filters";
 import { parseRequestFilters } from "./parse-request";
+import { withHints } from "./search-products";
 
 describe("parseRequestFilters", () => {
+  it("fills filters the model omitted without overriding explicit ones", () => {
+    const hints = parseRequestFilters(
+      "گوشی سامسونگ زیر ۳۰ میلیون در فردوسی می‌خوام",
+    );
+    const merged = withHints({ q: "سامسونگ" }, hints);
+
+    expect(merged.category).toBe("گوشی موبایل");
+    expect(merged.district).toBe("ferdowsi");
+    expect(merged.maxPrice).toBe(30_000_000);
+    expect(merged.q).toBe("سامسونگ");
+  });
+
   it("extracts model, budget, and district from a Persian request", () => {
     const filters = parseRequestFilters(
       "یه گوشی آیفون ۱۵ تا ۴۵ میلیون در ونک می‌خوام",
     );
 
-    expect(filters.category).toBe("موبایل");
+    expect(filters.category).toBe("گوشی موبایل");
     expect(filters.maxPrice).toBe(45_000_000);
     expect(filters.district).toBe("vanak");
     expect(filters.q).toContain("ایفون");
@@ -22,7 +35,7 @@ describe("parseRequestFilters", () => {
       "بین ۲۰ تا ۳۰ میلیون ساعت هوشمند می‌خوام",
     );
 
-    expect(filters.category).toBe("ساعت هوشمند");
+    expect(filters.category).toBe("ساعت و مچ بند هوشمند");
     expect(filters.minPrice).toBe(20_000_000);
     expect(filters.maxPrice).toBe(30_000_000);
   });
@@ -32,7 +45,7 @@ describe("parseRequestFilters", () => {
       "لپ تاپ تا ۸۰ میلیون با ارسال سریع و باز الان",
     );
 
-    expect(filters.category).toBe("لپ‌تاپ");
+    expect(filters.category).toBe("لپ تاپ و نوت بوک");
     expect(filters.maxPrice).toBe(80_000_000);
     expect(filters.fastDelivery).toBe(true);
     expect(filters.openNow).toBe(true);
@@ -47,7 +60,7 @@ describe("parseRequestFilters", () => {
     };
     const filters = parseRequestFilters("هدفون نزدیک من", context);
 
-    expect(filters.category).toBe("هدفون و هندزفری");
+    expect(filters.category).toBe("هدفون، هدست و هندزفری");
     expect(filters.district).toBeNull();
     expect(filters.lat).toBe(context.lat);
     expect(filters.lng).toBe(context.lng);
@@ -57,7 +70,16 @@ describe("parseRequestFilters", () => {
   it("uses the cheapest sort when the user asks for it", () => {
     const filters = parseRequestFilters("ارزان‌ترین گوشی سامسونگ");
     expect(filters.sort).toBe("price");
-    expect(filters.category).toBe("موبایل");
+    expect(filters.category).toBe("گوشی موبایل");
+  });
+
+  it("distinguishes security cameras from photo cameras", () => {
+    expect(parseRequestFilters("دوربین مدار بسته می‌خوام").category).toBe(
+      "دوربین مدار بسته",
+    );
+    expect(parseRequestFilters("دوربین عکاسی می‌خوام").category).toBe(
+      "دوربین عکاسی و فیلمبرداری",
+    );
   });
 
   it("falls back to an open query without inventing a category", () => {

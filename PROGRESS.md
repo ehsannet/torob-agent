@@ -196,6 +196,77 @@ Notes:
   the API accepts a short history for a later turn model.
 - Search and compare remain fully deterministic and independent of the LLM.
 
+## Real Torob dataset import (complete)
+
+Done:
+
+- Added `scripts/profile-dataset.ts` + `npm run data:profile`; generated
+  `docs/dataset-profile.md` from the 284 MB CSV export without copying full
+  contents.
+- Extended the import mapping/parsers for real Torob columns:
+  `persian_title`, `brand_name`, `category_name`, `price_toman`,
+  `last_price_changed_at`, `warranty`, `category_names`, `contacts`,
+  `location_label`, `payment_options`, `supports_fast_delivery`, `website_url`,
+  JSON specs arrays, and wrapped `weekly_hours`.
+- Added `scripts/import-dataset.ts`, `src/data/import/dataset.ts`,
+  `src/data/import/source.ts`, and `src/data/import/import-catalog.ts`.
+  The importer streams CSVs through `csv-parse`, batches inserts, normalizes
+  over-range prices to null, skips unknown references with a report, verifies
+  counts, and replaces the catalog in one transaction.
+- Added `npm run import` for local or container use. Sources resolve from
+  `--dir`/`DATA_DIR`, then `IMPORT_URL` (base URL or zip), then the local
+  dataset. The Docker runner now bundles `dist/import.mjs` and includes `unzip`.
+- Added `scripts/data-quality-report.ts` + `npm run data:quality`; generated
+  `docs/data-quality-report.md` with counts, field completeness, price units,
+  Tehran bounds, duplicates, and top categories/locations.
+- Real-data search fixes: exact imported category labels on home/data, district
+  matching by `location_label` then address, grouped SQL browse pagination for
+  empty searches, SQL prefiltering for open-now and radius, category facets
+  capped at 40, product cards capped at six offers, and demo labels replaced
+  with real-data caveats.
+- Updated README, `docs/data-model.md`, `docs/search.md`, `.env.example`,
+  Compose env passthrough, and DECISIONS D-028…D-030.
+
+Verification:
+
+- Dataset profile: shops 6,476 / 13 columns; products 225,903 / 7 columns;
+  offers 331,506 / 8 columns; declared README counts match.
+- Dry run and real import completed in **3m42s** with
+  `shops=6476 products=225903 offers=331506`, skipped 0/0/0, and count
+  verification passed.
+- Import normalization: 15,083 source-null prices + 508 over-limit prices stored
+  as null; 2 source products without titles imported with an explicit
+  `(بدون عنوان)` placeholder.
+- Quality report: 15,591 offers without price (4.7%), 769 without price date,
+  1,797 shops without category, 2,011 without hours, 317,102 without warranty,
+  9,557 duplicate shop/product pairs (29,872 rows), 404 identical duplicate
+  rows, 0 shops outside the Tehran bounding box. Maximum offers per shop is
+  1,346; the source is highly concentrated in Ferdowsi and Sheikh Hadi.
+- API/search checks on real data: empty browse ~0.9s / 96 KB response (warm
+  Compose ~1.0s; first container request ~3.0s); category `گوشی موبایل` ~0.2–0.6s / 157 KB (814
+  products, 2,122 offers); `iPhone 15` ~0.9s; district `ferdowsi` ~1.8s
+  before browse paging, ~0.9s after; open-now ~0.8s; fast-delivery query
+  ~0.7s. Category facets are 40 + selected; cards show six offers. Browse
+  pages 1–3 are disjoint.
+- Compare API on two real product IDs: two groups, deterministic recommendation,
+  `demo=false`, 0.1s.
+- Real-data agent smoke: ``گوشی سامسونگ در فردوسی`` => category
+  `گوشی موبایل`, district `ferdowsi`, 47 groups / 5 shops, LLM mode, 8s;
+  ``دوربین مدار بسته تا ۵ میلیون`` => 915 groups, CCTV category, 4.2s.
+  Deterministic parser hints fill omitted tool fields; repeat searches reuse
+  the first result instead of overwriting cards.
+- `npm test`: 101 tests passed across 14 files. `npm run typecheck`,
+  `npm run lint`, and `npm run build`: pass.
+
+Notes:
+
+- Real rows import with `is_sample=false`; the sample generator remains for
+  tests and can be restored with `npm run db:seed`.
+- Import is destructive by replacement and clears observations/seller checks;
+  back up before re-importing after Phase 4 data exists.
+- Two source titles are placeholders; 508 source prices are outside the integer
+  column range and are not searchable by price.
+
 ## Next — Phase 4 (seller loop)
 
 - Seller/availability confirmation flow on top of `seller_checks`.

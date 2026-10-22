@@ -4,7 +4,7 @@ Persian (RTL), mobile-first assistant for buying in person from shops in Tehran.
 Built with Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL, Drizzle
 ORM, and the Vercel AI SDK.
 
-> Current status: **Phase 3 — data-grounded LLM agent complete**. Search and
+> Current status: **Phase 3 complete + real Torob dataset imported**. Search and
 > compare remain deterministic and usable without the LLM; the agent adds
 > free-text intent parsing, tool calls, streaming, usage budgets, cache, and
 > fallback. See `PROGRESS.md`, `docs/search.md`, and `docs/agent.md`.
@@ -21,7 +21,8 @@ ORM, and the Vercel AI SDK.
 cp .env.example .env   # fill in LLM_API_KEY
 npm install
 npm run db:migrate
-npm run db:seed
+npm run import          # real CSV dataset from DATA_DIR or data/raw
+# or: npm run db:seed   # deterministic sample data instead
 npm run dev
 ```
 
@@ -31,6 +32,11 @@ Open http://localhost:3000. Search is at `/search`, the assistant at
 `DATABASE_URL` must point to a reachable Postgres instance for the health
 endpoint to report `db.status = "up"`. If it is missing, the app still runs and
 reports `not_configured`.
+
+The import is streaming and idempotent: it validates/reports rows, truncates the
+catalog, inserts in batches, then verifies counts. It preserves the CSV directory
+layout in `data/raw/torob-dataset/torob-dataset/`. Use
+`npm run import -- --dry-run` to validate without writing.
 
 ## Docker Compose
 
@@ -45,6 +51,16 @@ docker compose up --build -d
   inside the Compose network the app uses `db:5432`.
 - On startup the container applies migrations, then seeds the sample catalog
   only if the database is empty (`SEED_ON_START=true` by default).
+- Import the real dataset inside the running container:
+
+  ```bash
+  docker compose exec app npm run import -- --dry-run
+  docker compose exec app npm run import
+  ```
+
+  Use `IMPORT_URL` (base URL or a `.zip`) when the CSVs are not mounted, or
+  `DATA_DIR` when the dataset is available inside the container. The runner
+  image includes `unzip` for zip sources.
 
 The app service passes `LLM_*` variables from `.env` at runtime; secrets are
 never baked into the image.
@@ -69,7 +85,12 @@ curl 'http://localhost:3000/api/compare?ids=product-00031,product-00123&lat=35.7
   `distance`, `newest`), `page`, and `limit` (max 24).
 - Results are grouped by base product. Each offer carries the recorded price,
   last price change, derived Toman price, open status, distance, and the latest
-  confirmed stock status (unknown until a seller observation exists).
+  confirmed stock status (unknown until a seller observation exists). Product
+  cards return up to six offers; aggregate counts still describe every matching
+  offer.
+- Empty query/category searches use a database-side grouped page, so `/search`
+  stays responsive on the 331k-offer catalog. Category facets are capped at 40
+  labels; the selected category is always included.
 - `GET /api/compare` accepts 2–4 comma-separated product IDs and the same
   location context. It returns the products plus a data-only recommendation
   and reasons.
@@ -111,6 +132,8 @@ See `.env.example`. `.env` is git-ignored and must never be committed.
 | `APP_BASE_URL` | Public base URL for seller links |
 | `DEMO_MODE` | Enables deterministic demo behavior later |
 | `SEED_ON_START` | Seed sample data at container start if the catalog is empty |
+| `DATA_DIR` | Local CSV directory containing `shops.csv`, `products.csv`, `offers.csv` |
+| `IMPORT_URL` | Base URL for the three CSVs, or a `.zip` archive; used when no local data exists |
 
 ## Scripts
 
@@ -126,17 +149,26 @@ See `.env.example`. `.env` is git-ignored and must never be committed.
 | `npm run agent:smoke` | AI SDK provider + streamed tool-call check |
 | `npm run agent:run-smoke` | End-to-end agent fresh answer + cache hit (needs DB) |
 | `npm run db:migrate` | Apply migrations with the project runner |
+| `npm run import` | Import/refresh the real CSV catalog from `DATA_DIR`/`IMPORT_URL` |
+| `npm run import -- --dir <path>` | Import a specific CSV directory |
+| `npm run data:profile` | Write `docs/dataset-profile.md` |
+| `npm run data:quality` | Write `docs/data-quality-report.md` from the database |
 | `npm run db:seed` | Regenerate the sample catalog |
 | `npm run db:seed:if-empty` | Seed only when the catalog is empty |
-| `npm run db:report` | Catalog counts and data-quality gaps |
-| `npm run db:import -- <file>` | Import a JSON dataset (add `--dry-run` to validate) |
+| `npm run db:report` | Console catalog counts and data-quality gaps |
 
 ## Data
 
-The development catalog is generated sample data: 300 shops, 2,000 products,
-and 4,000 offers, with deliberate gaps and stale prices. All rows carry
-`is_sample`. See `docs/data-model.md` for the schema, normalization rules,
-hours format, and import contract.
+By default the development catalog is imported Torob data: **6,476 shops,
+225,903 products, and 331,506 offers** in Tehran. The source has gaps (15,591
+imported offers without a price, including 508 prices normalized to null to fit
+the integer column), 769 offers without a price date, 1,797 shops without a
+category, and 9,557 duplicate shop/product pairs. The import replaces the sample
+catalog but keeps schema, IDs, hours, specs, images, and coordinates. See
+`docs/data-quality-report.md` and `docs/dataset-profile.md`; the deterministic
+sample dataset remains available through `npm run db:seed`. Read
+`docs/data-model.md` for the schema, normalization rules, hours format, and
+import contract.
 
 ## LLM smoke test
 

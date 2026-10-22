@@ -36,14 +36,14 @@ export const STOCK_CLASSES: Record<StockStatus, string> = {
 };
 
 export const CATEGORY_ACCENTS: Record<string, string> = {
-  "موبایل": "from-sky-100 to-sky-50 text-sky-700",
-  "لپ‌تاپ": "from-indigo-100 to-indigo-50 text-indigo-700",
-  "هدفون و هندزفری": "from-fuchsia-100 to-fuchsia-50 text-fuchsia-700",
-  "ساعت هوشمند": "from-emerald-100 to-emerald-50 text-emerald-700",
-  "کنسول بازی": "from-violet-100 to-violet-50 text-violet-700",
+  "گوشی موبایل": "from-sky-100 to-sky-50 text-sky-700",
+  "لپ تاپ و نوت بوک": "from-indigo-100 to-indigo-50 text-indigo-700",
+  "هدفون، هدست و هندزفری": "from-fuchsia-100 to-fuchsia-50 text-fuchsia-700",
+  "ساعت و مچ بند هوشمند": "from-emerald-100 to-emerald-50 text-emerald-700",
+  "کنسول بازی  PS5": "from-violet-100 to-violet-50 text-violet-700",
   "تلویزیون": "from-amber-100 to-amber-50 text-amber-700",
-  "دوربین": "from-rose-100 to-rose-50 text-rose-700",
-  "لوازم خانگی": "from-teal-100 to-teal-50 text-teal-700",
+  "دوربین عکاسی و فیلمبرداری": "from-rose-100 to-rose-50 text-rose-700",
+  "دوربین مدار بسته": "from-teal-100 to-teal-50 text-teal-700",
 };
 
 export function categoryAccent(category: string): string {

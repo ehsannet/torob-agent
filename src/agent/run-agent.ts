@@ -7,6 +7,7 @@ import type {
   AgentStreamEvent,
 } from "@/lib/agent-types";
 import { contextToBaseFilters } from "./filters";
+import { parseRequestFilters } from "./tools/parse-request";
 import { fallbackText, runFallback } from "./fallback";
 import { agentCacheKey } from "./cache-key";
 import { agentCache } from "./reply-cache";
@@ -115,6 +116,7 @@ export async function* runAgent(
     const baseFilters = contextToBaseFilters(context);
     const toolContext: AgentToolContext = {
       baseFilters,
+      hints: parseRequestFilters(message, context),
       shops: [],
       error: null,
       lastAction: null,

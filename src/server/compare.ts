@@ -114,7 +114,7 @@ export async function compareProducts(
   };
 
   if (uniqueIds.length === 0) {
-    return { groups: [], recommendation: null, demo: true };
+    return { groups: [], recommendation: null, demo: false };
   }
 
   const items = await loadCatalogOffers(cleanFilters, uniqueIds);
@@ -127,6 +127,6 @@ export async function compareProducts(
   return {
     groups,
     recommendation: recommendGroup(groups),
-    demo: true,
+    demo: false,
   };
 }

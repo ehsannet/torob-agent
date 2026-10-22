@@ -100,7 +100,7 @@ export type SearchResult = {
   categories: CategoryFacet[];
   priceBounds: { min: number | null; max: number | null };
   tookMs: number;
-  demo: true;
+  demo: boolean;
 };
 
 export type Recommendation = {
@@ -112,5 +112,5 @@ export type Recommendation = {
 export type CompareResult = {
   groups: ProductGroup[];
   recommendation: Recommendation | null;
-  demo: true;
+  demo: boolean;
 };

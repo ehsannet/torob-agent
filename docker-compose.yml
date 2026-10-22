@@ -42,6 +42,8 @@ services:
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
       DEMO_MODE: ${DEMO_MODE:-true}
       SEED_ON_START: ${SEED_ON_START:-true}
+      DATA_DIR: ${DATA_DIR:-}
+      IMPORT_URL: ${IMPORT_URL:-}
     depends_on:
       db:
         condition: service_healthy

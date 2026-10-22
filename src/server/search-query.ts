@@ -1,7 +1,9 @@
 import type { QueryResultRow } from "pg";
 import { getPool } from "@/lib/db";
 import type { WeeklyHours } from "@/lib/hours";
+import { getTehranClock } from "@/lib/opening-hours";
 import { tokenizePersian } from "@/lib/persian";
+import { getDistrict } from "@/lib/tehran";
 import type {
   OfferView,
   ProductSummary,
@@ -114,6 +116,58 @@ function buildWhere(
     );
   }
 
+  if (filters.district) {
+    const district = getDistrict(filters.district);
+    if (district) {
+      const exact = add(district.name);
+      const partial = add(`%${escapeLikePattern(district.name)}%`);
+      conditions.push(
+        `(s.landmark = ${exact} or s.address_text like ${partial})`,
+      );
+    }
+  }
+
+  if (filters.lat !== null && filters.lng !== null) {
+    const latDelta = filters.radiusKm / 111;
+    const lngDelta =
+      filters.radiusKm / (111 * Math.max(Math.cos((filters.lat * Math.PI) / 180), 0.1));
+    conditions.push(
+      `(s.latitude between ${add(filters.lat - latDelta)} and ${add(filters.lat + latDelta)})`,
+    );
+    conditions.push(
+      `(s.longitude between ${add(filters.lng - lngDelta)} and ${add(filters.lng + lngDelta)})`,
+    );
+  }
+
+  if (filters.openNow) {
+    const clock = getTehranClock();
+    const days = [
+      "saturday",
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+    ] as const;
+    const dayIndex = days.indexOf(clock.weekday);
+    const previousDay = days[(dayIndex + 6) % 7];
+    const time = add(clock.time);
+    conditions.push(`(
+      s.weekly_hours is not null and (
+        exists (
+          select 1 from jsonb_array_elements(coalesce(s.weekly_hours -> ${add(clock.weekday)}, '[]'::jsonb)) r
+          where ((r ->> 'close') > (r ->> 'open') and ${time} >= (r ->> 'open') and ${time} < (r ->> 'close'))
+             or ((r ->> 'close') <= (r ->> 'open') and ${time} >= (r ->> 'open'))
+        )
+        or exists (
+          select 1 from jsonb_array_elements(coalesce(s.weekly_hours -> ${add(previousDay)}, '[]'::jsonb)) r
+          where (r ->> 'close') < (r ->> 'open') and ${time} < (r ->> 'close')
+        )
+      )
+    )`);
+  }
+
   if (filters.torobPay) conditions.push("s.accepts_torob_pay = true");
   if (filters.installments) conditions.push("s.offers_installments = true");
   if (filters.kalabarg) conditions.push("s.accepts_kalabarg = true");
@@ -124,6 +178,71 @@ function buildWhere(
   }
 
   return conditions.length > 0 ? `where ${conditions.join(" and ")}` : "";
+}
+
+export type GroupedProductPage = {
+  productIds: string[];
+  totalGroups: number;
+  totalOffers: number;
+};
+
+export async function loadGroupedProductPage(
+  filters: SearchFilters,
+  limit: number,
+): Promise<GroupedProductPage> {
+  const values: unknown[] = [];
+  const where = buildWhere(filters, undefined, values);
+  const offset = (filters.page - 1) * filters.limit;
+  values.push(limit, offset);
+  const limitPlaceholder = `$${values.length - 1}`;
+  const offsetPlaceholder = `$${values.length}`;
+  const order =
+    filters.sort === "price"
+      ? "g.min_price asc nulls last, g.product_id asc"
+      : filters.sort === "newest"
+        ? "g.latest desc nulls last, g.product_id asc"
+        : "g.offer_count desc, g.min_price asc nulls last, g.product_id asc";
+
+  const result = await getPool().query<
+    QueryResultRow & {
+      product_id: string;
+      total_groups: number;
+      total_offers: number;
+    }
+  >(
+    `
+    with filtered as (
+      select o.product_id, o.price, o.last_price_change_at
+      from offers o
+      join products p on p.id = o.product_id
+      join shops s on s.id = o.shop_id
+      ${where}
+    ),
+    grouped as (
+      select
+        product_id,
+        count(*)::int as offer_count,
+        min(price) filter (where price is not null) as min_price,
+        max(last_price_change_at) as latest
+      from filtered
+      group by product_id
+    )
+    select
+      g.product_id,
+      (select count(*)::int from grouped) as total_groups,
+      (select coalesce(sum(offer_count), 0)::int from grouped) as total_offers
+    from grouped g
+    order by ${order}
+    limit ${limitPlaceholder} offset ${offsetPlaceholder}
+  `,
+    values,
+  );
+
+  return {
+    productIds: result.rows.map((row) => row.product_id),
+    totalGroups: Number(result.rows[0]?.total_groups ?? 0),
+    totalOffers: Number(result.rows[0]?.total_offers ?? 0),
+  };
 }
 
 export async function loadOfferRows(

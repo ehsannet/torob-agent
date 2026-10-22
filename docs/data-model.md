@@ -1,8 +1,8 @@
-# Data model and sample catalog
+# Data model and catalog import
 
-Phase 1 implements the provisional Torob dataset schema, a deterministic sample
-catalog, and an import adapter. The real files can replace the sample data
-without changing application code.
+Phase 1 implements the Torob dataset schema, a deterministic sample catalog, and
+an import adapter. The real Torob CSVs are now the default imported catalog, and
+the sample generator remains available for deterministic tests.
 
 ## Tables
 
@@ -26,14 +26,20 @@ files in `__app_migrations` and attempts to enable `pg_trgm` (optional).
   `offer_observations` row. Without one, display «نامشخص».
 - `offers.price` is the recorded price. `offers.lastPriceChangeAt` is shown
   separately as relative + absolute time; older than 14 days is stale.
-- Every imported/generated row has `is_sample`; the UI must label sample data.
+- Every imported/generated row has `is_sample`. Real Torob rows import as
+  `is_sample = false`; sample rows remain explicitly marked so they can never be
+  mistaken for real shops or contacts.
 
 ### Identifiers and units
 
-- Shops: `shop-0001`; products: `product-00001`; offers: `offer-00001`.
+- Real Torob IDs are preserved: `shop_*`, `product_*`, `offer_*`. Sample IDs use
+  `shop-0001`, `product-00001`, and `offer-00001`.
 - Observations and seller checks use UUIDs.
-- `price_unit` is `TOMAN` or `RIAL`. Sample data uses Toman. Import detects the
-  unit from the source text; comparisons must normalize units in Phase 2.
+- `price_unit` is `TOMAN` or `RIAL`. Sample data uses Toman; `price_toman` is
+  imported as Toman. Comparisons normalize units at read time.
+- Imported prices above `2,000,000,000` Toman are stored as `NULL` because the
+  column is a PostgreSQL integer; the original value remains in the source CSV
+  and the import summary counts it as invalid.
 - Coordinates are `double precision`; distances will use the haversine formula
   (no PostGIS).
 
@@ -53,7 +59,11 @@ files in `__app_migrations` and attempts to enable `pg_trgm` (optional).
 - `null` means unknown; `[]` means closed.
 - Times are `HH:mm` in `Asia/Tehran`.
 - `src/lib/hours.ts` validates this shape; `parseHours` in the import layer also
-  accepts Persian day names and `HH:mm-HH:mm` strings.
+  accepts Persian and three-letter English day names, `HH:mm-HH:mm` strings, and
+  Torob wrappers such as `{ "sat": { "status": "declared", "shifts": [...] } }`.
+  A shift with `start_time`/`end_time` seconds is normalized to `HH:mm`; an empty
+  wrapper becomes `null` (unknown), not closed.
+- Real data has `{}` for some shops; those import as `null` (unknown).
 
 ## Persian normalization
 
@@ -96,24 +106,66 @@ npm run db:report        # counts and data-quality gaps
 
 ## Import adapter
 
-Input JSON:
+The import CLI streams three CSV files: `shops.csv`, `products.csv`, and
+`offers.csv` (inside the double-nested `torob-dataset/torob-dataset/` folder in
+the supplied archive). It does not load the 284 MB dataset into memory.
 
-```json
-{
-  "shops": [{ "id": "shop-1", "name": "...", "address": "..." }],
-  "products": [{ "id": "product-1", "title_fa": "...", "category": "..." }],
-  "offers": [{ "id": "offer-1", "shop_id": "shop-1", "product_id": "product-1", "price": "..." }]
-}
+Real columns:
+
+- shops: `shop_id,name,address,lat,lon,location_label,category_names,contacts,
+  instagram,website_url,payment_options,supports_fast_delivery,weekly_hours`
+- products: `product_id,persian_title,brand_name,category_name,model,
+  image_urls,specs`
+- offers: `offer_id,shop_id,product_id,seller_title,price_toman,description,
+  warranty,last_price_changed_at`
+
+Mapping rules:
+
+- `category_names` JSON array → first activity category; `location_label` →
+  landmark; `contacts` phone/website/Instagram/Payment payloads are flattened.
+- `specs` JSON array (`{key,section,value}`) → object; `image_urls` JSON array →
+  text array; `warranty` object → provider + months.
+- Two source products without a Persian title import with a transparent
+  `"(بدون عنوان)"` placeholder instead of being dropped, so their offers remain
+  searchable and count-consistent.
+- Missing IDs receive `import-*` fallbacks. Unknown shop/product references in
+  offers are skipped and reported; the known Torob dataset has none.
+- Dates must be ISO/Gregorian; Jalali parsing is deferred (D-018).
+
+Commands:
+
+```bash
+npm run import -- --dry-run                 # validate, no DB writes
+npm run import                              # local DATA_DIR or data/raw
+npm run import -- --dir path/to/folder      # explicit local folder
+IMPORT_URL=https://host/catalog/ npm run import   # base URL for CSVs
+IMPORT_URL=https://host/catalog.zip npm run import # zip (unzip required)
 ```
 
-- All field aliases (English/Persian) are in `src/data/import/mapping.ts`.
-- Missing IDs get `import-*` fallbacks; missing shop names/product titles are
-  rejected with a row index.
-- Duplicate IDs and unknown shop/product references are rejected before writes.
-- `npm run db:import -- path/to/dataset.json --dry-run` validates without
-  touching the database; omit `--dry-run` to replace the catalog.
-- Import replaces the entire catalog, including observations and seller checks.
-- Dates must be ISO/Gregorian in this phase.
+- `DATA_DIR`/`--dir` takes precedence; otherwise `IMPORT_URL`; otherwise the
+  local `data/raw/torob-dataset/torob-dataset` path.
+- Import runs in one transaction: validate/map, truncate catalog and
+  observations/checks, batched inserts, count verification, commit.
+- It is idempotent by replacement but **destructive**: seller checks and
+  observations are cleared. Do not run it after Phase 4 seller data exists
+  without a backup.
+- The Docker runner contains a bundled `dist/import.mjs` and `unzip`; run
+  `docker compose exec app npm run import`.
+- The legacy JSON shape is still supported by `mapRawCatalog` in tests, but the
+  CLI is CSV-only.
+
+## Data quality
+
+```bash
+npm run data:profile   # columns/types/samples -> docs/dataset-profile.md
+npm run data:quality   # row counts/gaps/price/coords -> docs/data-quality-report.md
+npm run db:report      # console summary
+```
+
+Current imported dataset: 6,476 shops, 225,903 products, 331,506 offers;
+15,591 offers without price, 769 without a price date, 1,797 shops without a
+category, 9,557 duplicate shop/product pairs, 0 shops outside the Tehran
+bounding box. See the generated reports for the exact run data.
 
 ## Verification
 
@@ -122,5 +174,9 @@ npm run typecheck
 npm run lint
 npm test
 npm run build
-npm run db:migrate && npm run db:seed && npm run db:report
+npm run db:migrate
+npm run import -- --dry-run
+npm run import
+npm run data:quality
+npm run db:report
 ```

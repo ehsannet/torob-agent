@@ -90,8 +90,10 @@ export function areaMatches(
   if (!center) return true;
 
   if (districtOnly && districtName) {
-    return normalizePersian(offer.addressText).includes(
-      normalizePersian(districtName),
+    const normalizedName = normalizePersian(districtName);
+    return (
+      normalizePersian(offer.landmark ?? "") === normalizedName ||
+      normalizePersian(offer.addressText).includes(normalizedName)
     );
   }
 
@@ -185,9 +187,10 @@ export function groupCatalogOffers(items: CatalogOffer[]): ProductGroup[] {
         .map((offer) => offer.lastPriceChangeAt as string)
         .sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null;
 
+    const shownOffers = sorted.slice(0, 6);
     const base: Omit<ProductGroup, "reasons"> = {
       product,
-      offers: sorted,
+      offers: shownOffers,
       offerCount: sorted.length,
       shopCount: new Set(sorted.map((offer) => offer.shopId)).size,
       priceMin: prices.length > 0 ? Math.min(...prices) : null,

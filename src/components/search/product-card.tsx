@@ -35,6 +35,7 @@ export function ProductCard({ group }: ProductCardProps) {
   const disabled = !selected && isFull;
   const topOffers = group.offers.slice(0, 2);
   const restOffers = group.offers.slice(2);
+  const hiddenOffers = Math.max(group.offerCount - group.offers.length, 0);
   const priceText =
     group.priceMin === null
       ? "قیمت ثبت نشده"
@@ -183,7 +184,7 @@ export function ProductCard({ group }: ProductCardProps) {
         {restOffers.length > 0 ? (
           <details className="group rounded-2xl border border-line bg-white">
             <summary className="cursor-pointer list-none px-3 py-2.5 text-center text-[10px] font-semibold text-brand-700">
-              نمایش {formatNumber(restOffers.length)} فروشگاه دیگر
+              نمایش {formatNumber(restOffers.length)} آفر دیگر
             </summary>
             <div className="space-y-2 border-t border-line p-2">
               {restOffers.map((offer) => (
@@ -191,6 +192,11 @@ export function ProductCard({ group }: ProductCardProps) {
               ))}
             </div>
           </details>
+        ) : null}
+        {hiddenOffers > 0 ? (
+          <p className="text-center text-[9px] text-muted">
+            {formatNumber(hiddenOffers)} آفر دیگر نیز برای این محصول ثبت شده است.
+          </p>
         ) : null}
       </div>
     </article>

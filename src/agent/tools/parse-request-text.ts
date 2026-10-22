@@ -4,7 +4,7 @@ import { TEHRAN_DISTRICTS } from "@/lib/tehran";
 
 export const CATEGORY_WORDS: Array<{ category: string; words: string[] }> = [
   {
-    category: "موبایل",
+    category: "گوشی موبایل",
     words: [
       "موبایل",
       "گوشی",
@@ -21,32 +21,36 @@ export const CATEGORY_WORDS: Array<{ category: string; words: string[] }> = [
     ],
   },
   {
-    category: "لپ‌تاپ",
+    category: "لپ تاپ و نوت بوک",
     words: ["لپ تاپ", "لپ‌تاپ", "لپتاب", "macbook", "مک بوک", "مکبوک", "لپ"],
   },
   {
-    category: "هدفون و هندزفری",
+    category: "هدفون، هدست و هندزفری",
     words: ["هدفون", "هندزفری", "ایرپاد", "airpods", "headphone", "earbuds"],
   },
   {
-    category: "ساعت هوشمند",
-    words: ["ساعت هوشمند", "ساعت", "watch", "اپل واچ"],
+    category: "ساعت و مچ بند هوشمند",
+    words: ["ساعت هوشمند", "ساعت و مچ بند", "watch", "اپل واچ"],
   },
   {
-    category: "کنسول بازی",
-    words: ["کنسول", "پلی استیشن", "پلی‌استیشن", "playstation", "ps5", "xbox", "ایکس باکس"],
+    category: "کنسول بازی  PS5",
+    words: ["ps5", "پلی استیشن", "پلی‌استیشن", "playstation"],
+  },
+  {
+    category: "کنسول بازی Xbox",
+    words: ["xbox", "ایکس باکس"],
   },
   {
     category: "تلویزیون",
     words: ["تلویزیون", "تی وی", "tv", "اسمارت تی وی"],
   },
   {
-    category: "دوربین",
-    words: ["دوربین", "camera", "canon", "nikon", "سونی آلفا"],
+    category: "دوربین مدار بسته",
+    words: ["دوربین مدار بسته", "مدار بسته", "cctv"],
   },
   {
-    category: "لوازم خانگی",
-    words: ["لوازم خانگی", "یخچال", "ماشین لباسشویی", "لباسشویی", "جارو", "مایکروویو"],
+    category: "دوربین عکاسی و فیلمبرداری",
+    words: ["دوربین", "camera", "canon", "nikon", "سونی آلفا"],
   },
 ];
 

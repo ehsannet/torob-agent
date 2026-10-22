@@ -4,6 +4,13 @@ import { normalizePersian, toEnglishDigits } from "../../lib/persian";
 export type PriceUnit = "TOMAN" | "RIAL";
 
 const DAY_ALIASES: Record<string, Weekday> = {
+  sat: "saturday",
+  sun: "sunday",
+  mon: "monday",
+  tue: "tuesday",
+  wed: "wednesday",
+  thu: "thursday",
+  fri: "friday",
   saturday: "saturday",
   sunday: "sunday",
   monday: "monday",
@@ -31,7 +38,8 @@ const FALSE_VALUES = new Set(["false", "0", "no", "n", "خیر", "ندارد", "
 export function asString(value: unknown): string | null {
   if (typeof value === "string") {
     const trimmed = value.trim();
-    return trimmed ? trimmed : null;
+    if (!trimmed || trimmed.toLowerCase() === "null") return null;
+    return trimmed;
   }
   if (typeof value === "number" && Number.isFinite(value)) return String(value);
   return null;
@@ -99,7 +107,23 @@ export function asRecord(value: unknown): Record<string, string> {
       return {};
     }
   }
-  if (typeof source !== "object" || source === null || Array.isArray(source)) {
+  if (Array.isArray(source)) {
+    const result: Record<string, string> = {};
+    for (const item of source) {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        continue;
+      }
+      const record = item as Record<string, unknown>;
+      const key = asString(record.key) ?? asString(record.name);
+      const section = asString(record.section);
+      const text = asString(record.value);
+      if (!key || text === null) continue;
+      const label = result[key] === undefined || !section ? key : `${key} (${section})`;
+      result[label] = text;
+    }
+    return result;
+  }
+  if (typeof source !== "object" || source === null) {
     return {};
   }
   const result: Record<string, string> = {};
@@ -136,7 +160,9 @@ export function parsePrice(value: unknown): {
 function normalizeTime(value: unknown): string | null {
   const text = asString(value);
   if (!text) return null;
-  const match = /^(\d{1,2}):(\d{2})$/.exec(toEnglishDigits(text).trim());
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(
+    toEnglishDigits(text).trim(),
+  );
   if (!match) return null;
   const hour = Number(match[1]);
   const minute = Number(match[2]);
@@ -169,11 +195,36 @@ function parseRange(value: unknown): TimeRange | null {
 
 function looksLikeTime(value: unknown): boolean {
   const text = asString(value);
-  return text !== null && /^\d{1,2}:\d{2}$/.test(toEnglishDigits(text).trim());
+  return (
+    text !== null &&
+    /^\d{1,2}:\d{2}(?::\d{2})?$/.test(toEnglishDigits(text).trim())
+  );
 }
 
 function parseDayRanges(value: unknown): TimeRange[] | null {
   if (value === null || value === undefined) return null;
+  if (typeof value === "object" && !Array.isArray(value)) {
+    const record = value as Record<string, unknown>;
+    if (Array.isArray(record.shifts)) {
+      const status = asString(record.status);
+      if (status === "closed") return [];
+      if (status === "unsupported") return null;
+      const ranges: TimeRange[] = [];
+      for (const shift of record.shifts) {
+        if (typeof shift !== "object" || shift === null || Array.isArray(shift)) {
+          return null;
+        }
+        const item = shift as Record<string, unknown>;
+        const range = parseRange({
+          open: item.start_time,
+          close: item.end_time,
+        });
+        if (!range) return null;
+        ranges.push(range);
+      }
+      return ranges;
+    }
+  }
   if (Array.isArray(value)) {
     if (value.length === 0) return [];
     if (value.length === 2 && looksLikeTime(value[0]) && looksLikeTime(value[1])) {
@@ -216,7 +267,7 @@ export function parseHours(value: unknown): WeeklyHours | null {
     if (ranges === null) return null;
     result[day] = ranges;
   }
-  return result;
+  return Object.keys(result).length > 0 ? result : null;
 }
 
 export function isWeekday(value: string): value is Weekday {

@@ -41,7 +41,7 @@ async function main(): Promise<void> {
       (select count(*)::int from offers) as offers,
       (select count(*)::int from shops where weekly_hours is null) as shops_without_hours,
       (select count(*)::int from shops where latitude is null or longitude is null) as shops_without_coords,
-      (select count(*)::int from shops where address_confidence < 0.6) as low_confidence_shops,
+      (select count(*)::int from shops where address_confidence < 0.5) as low_confidence_shops,
       (select count(*)::int from offers where price is null) as offers_without_price,
       (select count(*)::int from offers where last_price_change_at is null) as offers_without_price_date,
       (select count(*)::int from offers where last_price_change_at < now() - interval '14 days') as stale_offers,
@@ -100,7 +100,7 @@ async function main(): Promise<void> {
   );
 
   if (report.shops === 0) {
-    console.log("[report] catalog is empty; run npm run db:migrate && npm run db:seed");
+    console.log("[report] catalog is empty; run npm run db:migrate && npm run import");
   }
 }
 

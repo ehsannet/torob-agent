@@ -6,6 +6,20 @@ export type TehranDistrict = {
 };
 
 export const TEHRAN_DISTRICTS: readonly TehranDistrict[] = [
+  { slug: "ferdowsi", name: "فردوسی", latitude: 35.693, longitude: 51.4202 },
+  { slug: "sheikh-hadi", name: "شیخ هادی", latitude: 35.6946, longitude: 51.4088 },
+  { slug: "baharestan", name: "بهارستان", latitude: 35.6918, longitude: 51.4257 },
+  { slug: "aseman", name: "آسمان", latitude: 35.7775, longitude: 51.3537 },
+  { slug: "bagh-feiz", name: "باغ فیض", latitude: 35.7395, longitude: 51.3156 },
+  { slug: "iranshahr", name: "ایرانشهر", latitude: 35.7114, longitude: 51.4216 },
+  { slug: "sanai", name: "سنائی", latitude: 35.7192, longitude: 51.4224 },
+  { slug: "sohrevardi", name: "سهروردی", latitude: 35.7212, longitude: 51.43 },
+  { slug: "jannat-abad-jonoubi", name: "جنت آباد جنوبی", latitude: 35.7382, longitude: 51.3096 },
+  { slug: "amjadieh", name: "امجدیه", latitude: 35.7152, longitude: 51.4284 },
+  { slug: "azarbaijan", name: "آذربایجان", latitude: 35.6945, longitude: 51.4039 },
+  { slug: "ashtiani", name: "آشتیانی", latitude: 35.7148, longitude: 51.5029 },
+  { slug: "kianshahr-shomali", name: "کیانشهر شمالی", latitude: 35.6419, longitude: 51.4456 },
+  { slug: "bahar", name: "بهار", latitude: 35.7147, longitude: 51.4328 },
   { slug: "vanak", name: "ونک", latitude: 35.7573, longitude: 51.4102 },
   { slug: "saadat-abad", name: "سعادت‌آباد", latitude: 35.78, longitude: 51.375 },
   { slug: "valiasr", name: "ولیعصر", latitude: 35.785, longitude: 51.41 },

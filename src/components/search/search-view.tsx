@@ -200,7 +200,7 @@ export function SearchView({ result }: { result: SearchResult }) {
         <footer className="mt-auto pt-3 text-center text-[10px] leading-6 text-muted">
           <p className="flex items-center justify-center gap-1">
             <SparkIcon className="size-3 text-brand-500" />
-            دادهٔ نمونه؛ قیمت‌ها و ساعت‌ها قبل از خرید باید تأیید شوند.
+            دادهٔ واقعی ترب؛ قیمت‌ها و ساعت‌ها قبل از خرید باید تأیید شوند.
           </p>
           <Link
             href="/api/health"

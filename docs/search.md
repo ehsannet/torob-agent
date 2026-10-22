@@ -12,9 +12,9 @@ Phase 2 is deliberately LLM-free. The UI and both APIs call the same services:
 | Parameter | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `q` | string | empty | Normalized Persian/Latin text; up to 100 chars. |
-| `category` | string | all | Exact category label, e.g. `موبایل`. |
+| `category` | string | all | Exact imported category label, e.g. `گوشی موبایل` or `دوربین مدار بسته`. |
 | `minPrice` / `maxPrice` | integer | none | Toman; RIAL offers are converted before filtering. |
-| `district` | slug | none | One of `TEHRAN_DISTRICTS` in `src/lib/tehran.ts` (e.g. `vanak`). Matches the normalized address. |
+| `district` | slug | none | One of `TEHRAN_DISTRICTS` in `src/lib/tehran.ts` (e.g. `ferdowsi`, `vanak`). Matches the imported `location_label` first, then the normalized address. |
 | `lat` / `lng` | number | none | Must be supplied together. |
 | `radiusKm` | number | 5 | 0.5–30; only used with coordinates. |
 | `openNow` | `1`/`true` | false | Includes open and closing-soon shops. |
@@ -27,7 +27,7 @@ Phase 2 is deliberately LLM-free. The UI and both APIs call the same services:
 | `limit` | integer | 12 | 1–24. |
 
 Invalid values return HTTP `400` with `{ "error": "..." }`. Successful responses
-are `no-store` JSON and carry `demo: true`.
+are `no-store` JSON and carry `demo: false` for imported Torob data.
 
 Response outline:
 
@@ -59,18 +59,22 @@ Response outline:
   ],
   "totalGroups": 24,
   "totalOffers": 56,
-  "categories": [{ "value": "موبایل", "label": "موبایل", "count": 250 }],
+  "categories": [{ "value": "گوشی موبایل", "label": "گوشی موبایل", "count": 814 }],
   "priceBounds": { "min": 1000000, "max": 500000000 },
   "tookMs": 44,
-  "demo": true
+  "demo": false
 }
 ```
 
 ## Semantics
 
-- **Grouping.** Offers are grouped by `product_id`; a group exposes all matching
-  shop offers, the min/max recorded price, distinct shop count, nearest
-  distance, open-shop count, and latest price-change timestamp.
+- **Grouping.** Offers are grouped by `product_id`; a group exposes up to six
+  matching shop offers for display, while `offerCount`, `shopCount`, price
+  bounds, open-shop count, and latest price-change timestamp cover all matching
+  offers. Empty query/category requests use a database-side grouped
+  `LIMIT/OFFSET` page so the 331k-offer catalog is not loaded into memory.
+  Browse pages are disjoint; global relevance for browse is approximated by
+  offer count before the page is ranked.
 - **Prices.** `priceToman` is derived from the offer unit (RIAL ÷ 10). Null
   prices stay null and display as «نامشخص»/«ثبت نشده». Budget filters exclude
   null prices.
@@ -82,8 +86,13 @@ Response outline:
   `weekly_hours` means unknown. Closing within 60 minutes is
   `closing_soon`.
 - **Distance.** Haversine. Without coordinates or a district, distances are
-  null. A district uses the normalized address; “near me” uses coordinates and
-  radius.
+  null. A district matches the imported `landmark`/`location_label`, then the
+  address text; “near me” uses coordinates and a SQL bounding box followed by an
+  exact haversine filter.
+- **Open now.** The SQL candidate query and TypeScript card mapping both apply
+  `Asia/Tehran` weekly-hours rules, including split and overnight shifts.
+- **Categories.** Facets are capped at the 40 largest product categories plus
+  the selected category; counts are per product, not per offer.
 - **Ranking.** Default relevance favors more open shops, then nearer shops,
   more sellers, and lower price. Price/distance/newest sorting use the
   corresponding group value with nulls last.
@@ -104,7 +113,9 @@ Response outline:
 ## UI routes
 
 - `/` — entry, search, categories, transparency explainer.
-- `/search` — grouped results, filters, shop cards, compare selection.
+- `/search` — grouped results, filters, shop cards, compare selection. Without
+  a query/category it shows a paginated browse view rather than scanning every
+  offer.
 - `/compare` — side-by-side columns, winner banner, full comparison table.
 
 All three routes work with the database only; no model configuration is needed.
