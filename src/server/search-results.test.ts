@@ -29,6 +29,7 @@ function offer(id: string, shopId: string): OfferView {
       closesAt: "21:00",
       minutesUntilClose: 120,
     },
+    hoursConfirmedAt: null,
     stockStatus: "unknown",
     confirmedPriceToman: null,
     stockConfirmedAt: null,

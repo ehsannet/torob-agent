@@ -2,6 +2,10 @@ import type {
   AgentShop,
 } from "@/lib/agent-types";
 import type {
+  SellerAlternative,
+  SellerCheckSummary,
+} from "@/lib/seller-types";
+import type {
   CompareResult,
   SearchFilters,
   SearchResult,
@@ -19,6 +23,8 @@ export type AgentToolContext = {
     result: CompareResult;
   };
   shops: AgentShop[];
+  sellerChecks: SellerCheckSummary[];
+  alternatives: SellerAlternative[];
   error: string | null;
   lastAction: "search" | "compare" | null;
 };

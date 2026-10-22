@@ -4,10 +4,12 @@ Persian (RTL), mobile-first assistant for buying in person from shops in Tehran.
 Built with Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL, Drizzle
 ORM, and the Vercel AI SDK.
 
-> Current status: **Phase 3 complete + real Torob dataset imported**. Search and
+> Current status: **Phase 4 complete + real Torob dataset imported**. Search and
 > compare remain deterministic and usable without the LLM; the agent adds
 > free-text intent parsing, tool calls, streaming, usage budgets, cache, and
-> fallback. See `PROGRESS.md`, `docs/search.md`, and `docs/agent.md`.
+> fallback. Sellers can confirm stock, price, hours, and warranty through
+> tokenized links, with a deterministic demo simulator. See `PROGRESS.md`,
+> `docs/search.md`, `docs/agent.md`, and `docs/seller-loop.md`.
 
 ## Requirements
 
@@ -27,7 +29,8 @@ npm run dev
 ```
 
 Open http://localhost:3000. Search is at `/search`, the assistant at
-`/assistant`, and the health endpoint at `/api/health`.
+`/assistant`, seller links at `/s/<token>`, the demo simulator at
+`/dev/seller-simulator`, and the health endpoint at `/api/health`.
 
 `DATABASE_URL` must point to a reachable Postgres instance for the health
 endpoint to report `db.status = "up"`. If it is missing, the app still runs and
@@ -85,9 +88,9 @@ curl 'http://localhost:3000/api/compare?ids=product-00031,product-00123&lat=35.7
   `distance`, `newest`), `page`, and `limit` (max 24).
 - Results are grouped by base product. Each offer carries the recorded price,
   last price change, derived Toman price, open status, distance, and the latest
-  confirmed stock status (unknown until a seller observation exists). Product
-  cards return up to six offers; aggregate counts still describe every matching
-  offer.
+  confirmed stock status, price, and hours (unknown until a seller observation
+  exists). Product cards return up to six offers; aggregate counts still
+  describe every matching offer.
 - Empty query/category searches use a database-side grouped page, so `/search`
   stays responsive on the 331k-offer catalog. Category facets are capped at 40
   labels; the selected category is always included.
@@ -111,8 +114,33 @@ NDJSON (`status`, `delta`, `result`, `usage`, `done`, `error`).
 - If the key is missing, the provider fails, the request times out, or the
   budget is exhausted, a Persian rule-based fallback searches the catalog and
   labels the answer accordingly. Search and compare never depend on the LLM.
-- See `docs/agent.md` for the request/event contract, tools, configuration, and
-  limitations.
+- Seller tools can create/check confirmation requests and return alternatives;
+  status-only results are valid agent results. See `docs/agent.md` for the
+  request/event contract, tools, configuration, and limitations.
+
+## Seller confirmation loop (Phase 4)
+
+While browsing `/search`, the buyer can ask one to five shops to confirm stock,
+price, known weekly hours, and warranty before visiting. This is additive to the
+deterministic catalog: dataset prices and hours are never overwritten, and stock
+stays «نامشخص» until an observation exists.
+
+- `POST /api/seller-checks` creates tokenized checks; `GET` lists a browser
+  session's checks. `GET /api/seller-checks/[token]` and the public `/s/[token]`
+  page drive the seller response. See `docs/seller-loop.md` for the full
+  contract.
+- `DEMO_MODE=true` (the default) simulates a seller: 55% in stock, 25% out of
+  stock, 20% no answer after 6–12 seconds, advanced by polling rather than a
+  background daemon. `/dev/seller-simulator` is available only in demo mode.
+- Answers create immutable offer/shop observations. Search cards immediately
+  show the latest confirmed stock, price, and hours; checks that are out of
+  stock or unanswered show alternatives from other shops.
+- Three of the assistant's tools support the loop:
+  `create_seller_check`, `get_seller_check_status`, and
+  `suggest_alternatives`, in addition to search/compare. Seller results are not
+  cached.
+- `viewed_at` is added by `drizzle/0001_seller_check_viewed_at.sql`; Compose
+  applies it at startup before serving.
 
 ## Environment variables
 
@@ -129,8 +157,8 @@ See `.env.example`. `.env` is git-ignored and must never be committed.
 | `LLM_OUTPUT_PRICE_PER_MILLION` | Cost estimate output price, default `0.58` |
 | `LLM_BUDGET_USD` | Agent cost budget, default `3` |
 | `EMBEDDING_MODEL` | Embedding model for later phases |
-| `APP_BASE_URL` | Public base URL for seller links |
-| `DEMO_MODE` | Enables deterministic demo behavior later |
+| `APP_BASE_URL` | Public base URL for seller links, default `http://localhost:3000` |
+| `DEMO_MODE` | Enables deterministic simulated seller responses |
 | `SEED_ON_START` | Seed sample data at container start if the catalog is empty |
 | `DATA_DIR` | Local CSV directory containing `shops.csv`, `products.csv`, `offers.csv` |
 | `IMPORT_URL` | Base URL for the three CSVs, or a `.zip` archive; used when no local data exists |

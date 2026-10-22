@@ -15,27 +15,25 @@ export function pickResult(
   toolContext: AgentToolContext,
   tookMs: number,
 ): AgentResult | null {
+  let result: AgentResult | null = null;
+
   if (toolContext.lastAction === "compare" && toolContext.compare) {
-    return toAgentCompareResult(
+    result = toAgentCompareResult(
       toolContext.compare.result,
       toolContext.compare.filters,
       "llm",
       tookMs,
     );
-  }
-
-  if (toolContext.search) {
-    return toAgentSearchResult(
+  } else if (toolContext.search) {
+    result = toAgentSearchResult(
       toolContext.search.result,
       "llm",
       tookMs,
       undefined,
       toolContext.shops,
     );
-  }
-
-  if (toolContext.compare) {
-    return toAgentCompareResult(
+  } else if (toolContext.compare) {
+    result = toAgentCompareResult(
       toolContext.compare.result,
       toolContext.compare.filters,
       "llm",
@@ -43,7 +41,37 @@ export function pickResult(
     );
   }
 
-  return null;
+  if (
+    !result &&
+    (toolContext.sellerChecks.length > 0 ||
+      toolContext.alternatives.length > 0)
+  ) {
+    result = {
+      kind: "seller",
+      filters: toolContext.baseFilters,
+      products: [],
+      shops: [],
+      recommendation: null,
+      compareIds: [],
+      totalGroups: 0,
+      totalOffers: 0,
+      mode: "llm",
+      tookMs,
+    };
+  }
+
+  if (!result) return null;
+  return {
+    ...result,
+    sellerChecks:
+      toolContext.sellerChecks.length > 0
+        ? toolContext.sellerChecks
+        : undefined,
+    alternatives:
+      toolContext.alternatives.length > 0
+        ? toolContext.alternatives
+        : undefined,
+  };
 }
 
 export function withFallbackMode(

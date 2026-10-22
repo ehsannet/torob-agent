@@ -139,6 +139,12 @@ export function ShopOfferCard({ offer, isBest = false }: ShopOfferCardProps) {
         </div>
       ) : null}
 
+      {offer.hoursConfirmedAt ? (
+        <p className="mt-2 text-[9px] text-success">
+          ساعت کاری از طرف فروشنده تأیید شده است.
+        </p>
+      ) : null}
+
       {offer.warrantyProvider ? (
         <p className="mt-2 text-[9px] text-muted">
           گارانتی {offer.warrantyProvider}

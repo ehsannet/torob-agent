@@ -1,5 +1,9 @@
 import type { OpenState } from "./opening-hours";
 import type {
+  SellerAlternative,
+  SellerCheckSummary,
+} from "./seller-types";
+import type {
   SearchFilters,
   StockStatus,
 } from "./search-types";
@@ -60,7 +64,7 @@ export type AgentRecommendation = {
 };
 
 export type AgentResult = {
-  kind: "search" | "compare";
+  kind: "search" | "compare" | "seller";
   filters: SearchFilters;
   products: AgentProduct[];
   shops: AgentShop[];
@@ -70,6 +74,8 @@ export type AgentResult = {
   totalOffers: number;
   mode: AgentMode;
   fallbackReason?: string;
+  sellerChecks?: SellerCheckSummary[];
+  alternatives?: SellerAlternative[];
   tookMs: number;
 };
 

@@ -37,6 +37,8 @@ export type OfferRow = QueryResultRow & {
   latitude: number | null;
   longitude: number | null;
   weekly_hours: WeeklyHours | string | null;
+  confirmed_hours: WeeklyHours | string | null;
+  hours_confirmed_at: Date | null;
   accepts_torob_pay: boolean;
   offers_installments: boolean;
   accepts_kalabarg: boolean;
@@ -278,6 +280,8 @@ export async function loadOfferRows(
       s.latitude,
       s.longitude,
       s.weekly_hours,
+      shop_obs.confirmed_hours,
+      shop_obs.confirmed_at as hours_confirmed_at,
       s.accepts_torob_pay,
       s.offers_installments,
       s.accepts_kalabarg,
@@ -295,6 +299,13 @@ export async function loadOfferRows(
       order by oo.confirmed_at desc
       limit 1
     ) obs on true
+    left join lateral (
+      select so.confirmed_hours, so.confirmed_at
+      from shop_observations so
+      where so.shop_id = s.id and so.confirmed_hours is not null
+      order by so.confirmed_at desc
+      limit 1
+    ) shop_obs on true
     ${where}
     order by p.id asc, o.price asc nulls last, s.id asc
   `;

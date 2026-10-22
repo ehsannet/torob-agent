@@ -23,6 +23,7 @@ import {
   StoreIcon,
 } from "@/components/ui/icons";
 import { ShopOfferCard } from "./shop-offer-card";
+import { SellerCheckPanel } from "@/components/seller/seller-check-panel";
 import { useCompare } from "./compare-provider";
 
 type ProductCardProps = {
@@ -198,6 +199,7 @@ export function ProductCard({ group }: ProductCardProps) {
             {formatNumber(hiddenOffers)} آفر دیگر نیز برای این محصول ثبت شده است.
           </p>
         ) : null}
+        <SellerCheckPanel group={group} />
       </div>
     </article>
   );

@@ -46,6 +46,7 @@ Response outline:
           "openStatus": { "state": "open", "label": "باز است" },
           "distanceKm": 1.2,
           "stockStatus": "unknown",
+          "hoursConfirmedAt": null,
           "features": { "torobPay": true }
         }
       ],
@@ -81,6 +82,8 @@ Response outline:
 - **Transparency.** `recordedPrice` is the imported/displayed price;
   `confirmedPriceToman` and `stockStatus` come only from the latest
   `offer_observations` row. No observation means `unknown`, never “in stock”.
+  `hoursConfirmedAt` is set when the latest `shop_observations` row confirmed
+  hours; the effective hours then override the dataset value for open-state.
 - **Hours.** `openStatus` is computed in `Asia/Tehran`, supporting multiple
   ranges and ranges that cross midnight. Empty ranges mean closed; missing
   `weekly_hours` means unknown. Closing within 60 minutes is

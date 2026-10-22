@@ -1,4 +1,5 @@
 import { formatPersianNumber } from "@/lib/persian";
+import { SELLER_STATUS_LABELS } from "@/lib/seller-labels";
 import { getDistrict } from "@/lib/tehran";
 import type { AgentContext, AgentResult } from "@/lib/agent-types";
 import type { SearchFilters } from "@/lib/search-types";
@@ -12,6 +13,16 @@ export type FallbackOutcome = {
 };
 
 export function fallbackText(result: AgentResult, reason: string): string {
+  if (result.kind === "seller") {
+    const check = result.sellerChecks?.[0];
+    if (check) {
+      return `وضعیت درخواست ${check.shopName} برای ${check.productTitle}: ${SELLER_STATUS_LABELS[check.status]}. ${reason}`;
+    }
+    if (result.alternatives && result.alternatives.length > 0) {
+      return `چند گزینهٔ جایگزین از دادهٔ ثبت‌شده پیدا شد. ${reason}`;
+    }
+  }
+
   const product = result.products[0];
   if (!product) {
     return `برای این درخواست نتیجه‌ای در فروشگاه‌های حضوری پیدا نکردم. بودجه، محله یا مدل را کمی بازتر بگو تا دوباره جست‌وجو کنم. ${reason}`;

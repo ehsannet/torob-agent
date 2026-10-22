@@ -30,6 +30,7 @@ export function mapOffer(
     center && latitude !== null && longitude !== null
       ? haversineKm(center, { latitude, longitude })
       : null;
+  const hours = row.confirmed_hours ?? row.weekly_hours;
 
   const offer: OfferView = {
     id: row.offer_id,
@@ -50,7 +51,10 @@ export function mapOffer(
     priceToman,
     lastPriceChangeAt,
     stalePrice: isStalePrice(lastPriceChangeAt, now),
-    openStatus: getOpenStatus(parseWeeklyHours(row.weekly_hours), now),
+    openStatus: getOpenStatus(parseWeeklyHours(hours), now),
+    hoursConfirmedAt: row.hours_confirmed_at
+      ? new Date(row.hours_confirmed_at).toISOString()
+      : null,
     stockStatus: row.stock_status ?? "unknown",
     confirmedPriceToman: toToman(row.confirmed_price, row.price_unit),
     stockConfirmedAt: row.confirmed_at

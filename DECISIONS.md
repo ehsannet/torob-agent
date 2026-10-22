@@ -179,3 +179,48 @@
   source products without titles receive an explicit `(بدون عنوان)` placeholder
   so their offers are not orphaned. Generated reports are
   `docs/dataset-profile.md` and `docs/data-quality-report.md`.
+
+- **D-031 — Seller confirmation is an additive observation layer.** Phase 4
+  creates at most five tokenized `seller_checks` per request with stock/price
+  questions plus conditional hours/warranty questions. Sellers write immutable
+  `offer_observations` (and `shop_observations` for confirmed hours); imported
+  `offers`/`shops` values are never edited. Search shows confirmed data alongside
+  the recorded dataset price, and `unknown` stock remains distinct from
+  out-of-stock.
+
+- **D-032 — Demo seller simulation is deterministic and poll-driven.** With
+  `DEMO_MODE=true`, the token determines a 55/25/20 in-stock/out-of-stock/
+  no-answer plan with a 6–12 second delay. A due result advances only when a
+  status, seller-page, or polling request reads it; there is no timer, queue
+  worker, or daemon. This preserves the single-process Compose deployment and
+  makes demos reproducible while keeping `/dev/seller-simulator` available for
+  manual overrides during the delay.
+
+- **D-033 — Seller links are capability URLs, not accounts.** A public link
+  contains a random `lnk_`/`sim_` token and is sufficient to view and answer one
+  check. There is no seller login or verified identity. Checks expire after seven
+  days, accept one response, and expose only the chosen product/shop/check
+  context. `viewed_at` is recorded on a real page view and backfilled by an
+  auto/manual response when needed. This is suitable for the demo; production
+  shop authentication remains future work.
+
+- **D-034 — Effective hours come from the latest confirmed shop observation.**
+  Search reads `shop_observations.confirmed_hours` when present, otherwise the
+  imported `shops.weekly_hours`, and calculates open state from that effective
+  value. The dataset row is not rewritten. `hoursConfirmedAt` is shown so buyers
+  can distinguish confirmed hours from recorded data.
+
+- **D-035 — Alternatives are deterministic and never claim confirmation.**
+  After an out-of-stock answer or expiration, alternatives are the same product
+  at other shops first, then similar products in the same category/brand within
+  ±40% of the price, excluding the current and out-of-stock offers. Up to four
+  are returned with explicit reasons and remain labelled as recorded data until
+  they have their own seller observation.
+
+- **D-036 — Seller tools participate in the single agent loop.** The assistant
+  can create checks, read their status, and suggest alternatives from real tool
+  output. Status/alternative-only turns produce `AgentResult.kind = "seller"`
+  instead of a fabricated search result. Responses containing seller checks or
+  alternatives are excluded from the 30-minute reply cache so links and status
+  stay current; the rest of the Phase 3 queue/budget/fallback design is
+  unchanged.

@@ -118,6 +118,8 @@ export async function* runAgent(
       baseFilters,
       hints: parseRequestFilters(message, context),
       shops: [],
+      sellerChecks: [],
+      alternatives: [],
       error: null,
       lastAction: null,
     };
@@ -139,7 +141,13 @@ export async function* runAgent(
       prepareStep: () => {
         if (toolContext.search && toolContext.search.result.totalGroups > 0) {
           return {
-            activeTools: ["compare_products", "find_shops"] as const,
+            activeTools: [
+              "compare_products",
+              "find_shops",
+              "create_seller_check",
+              "get_seller_check_status",
+              "suggest_alternatives",
+            ] as const,
           };
         }
         return undefined;
@@ -263,7 +271,11 @@ export async function* runAgent(
       return;
     }
 
-    if (mode === "llm") {
+    if (
+      mode === "llm" &&
+      (agentResult.sellerChecks?.length ?? 0) === 0 &&
+      (agentResult.alternatives?.length ?? 0) === 0
+    ) {
       agentCache.set(cacheKey, {
         result: agentResult,
         content: text,

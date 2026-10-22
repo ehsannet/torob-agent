@@ -51,6 +51,7 @@ export type OfferView = {
   lastPriceChangeAt: string | null;
   stalePrice: boolean;
   openStatus: OpenStatus;
+  hoursConfirmedAt: string | null;
   stockStatus: StockStatus;
   confirmedPriceToman: number | null;
   stockConfirmedAt: string | null;

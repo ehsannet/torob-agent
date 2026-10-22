@@ -47,7 +47,7 @@ export function BrandHeader({
           دستیار
         </Link>
         <span className="rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-brand-700">
-          فاز ۳
+          فاز ۴
         </span>
       </div>
     </header>

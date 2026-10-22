@@ -13,10 +13,12 @@ the sample generator remains available for deterministic tests.
 | `offers` | Product listed at a shop: price, price unit, warranty, last price change |
 | `offer_observations` | Seller-confirmed price/stock for an offer |
 | `shop_observations` | Seller-confirmed hours/notes for a shop |
-| `seller_checks` | A follow-up request with token, questions, status, timestamps |
+| `seller_checks` | A follow-up request with token, questions, status, `viewed_at`, timestamps |
 
 Run `npm run db:migrate` to apply `drizzle/*.sql`. The runner records applied
-files in `__app_migrations` and attempts to enable `pg_trgm` (optional).
+files in `__app_migrations` and attempts to enable `pg_trgm` (optional). Phase 4
+adds `0001_seller_check_viewed_at.sql`; see `docs/seller-loop.md` for the API and
+seller behavior.
 
 ### Separation rules
 
@@ -26,6 +28,11 @@ files in `__app_migrations` and attempts to enable `pg_trgm` (optional).
   `offer_observations` row. Without one, display «نامشخص».
 - `offers.price` is the recorded price. `offers.lastPriceChangeAt` is shown
   separately as relative + absolute time; older than 14 days is stale.
+- `offer_observations` and `shop_observations` are immutable confirmation
+  history. Search uses only the latest offer observation and latest confirmed
+  weekly hours; it never writes observations back to `offers` or `shops`.
+- A visible seller link records `seller_checks.viewed_at`; a response is accepted
+  once and closes the check. Expired checks are terminal.
 - Every imported/generated row has `is_sample`. Real Torob rows import as
   `is_sample = false`; sample rows remain explicitly marked so they can never be
   mistaken for real shops or contacts.
@@ -34,7 +41,8 @@ files in `__app_migrations` and attempts to enable `pg_trgm` (optional).
 
 - Real Torob IDs are preserved: `shop_*`, `product_*`, `offer_*`. Sample IDs use
   `shop-0001`, `product-00001`, and `offer-00001`.
-- Observations and seller checks use UUIDs.
+- Observations and seller checks use UUIDs. Checks also carry a separate
+  `lnk_`/`sim_` capability token with a unique index.
 - `price_unit` is `TOMAN` or `RIAL`. Sample data uses Toman; `price_toman` is
   imported as Toman. Comparisons normalize units at read time.
 - Imported prices above `2,000,000,000` Toman are stored as `NULL` because the
@@ -64,6 +72,9 @@ files in `__app_migrations` and attempts to enable `pg_trgm` (optional).
   A shift with `start_time`/`end_time` seconds is normalized to `HH:mm`; an empty
   wrapper becomes `null` (unknown), not closed.
 - Real data has `{}` for some shops; those import as `null` (unknown).
+- A confirmed `shop_observations.confirmed_hours` value overrides the dataset
+  hours for display/open state until a newer confirmed value exists; the
+  imported `shops.weekly_hours` stays untouched.
 
 ## Persian normalization
 

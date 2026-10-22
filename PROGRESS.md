@@ -267,7 +267,82 @@ Notes:
 - Two source titles are placeholders; 508 source prices are outside the integer
   column range and are not searchable by price.
 
-## Next — Phase 4 (seller loop)
+## Phase 4 — seller confirmation loop (complete)
 
-- Seller/availability confirmation flow on top of `seller_checks`.
-- Visit planning and follow-up UX.
+Done:
+
+- Seller domain under `src/server/seller/`: context loading, deterministic
+  simulator, view/timeline assembly, check creation/listing, response ingestion,
+  alternatives, channel selection, and token generation.
+- Public APIs: `POST/GET /api/seller-checks`,
+  `GET /api/seller-checks/[token]`, and
+  `POST /api/seller-checks/[token]/respond`. Inputs use zod, unknown/expired
+  checks fail cleanly, duplicate answers return `409`, and responses are
+  `no-store`.
+- Public seller page `/s/[token]` with product/shop context, one-tap stock and
+  price response, conditional hours/warranty confirmation, optional note,
+  timeline, share/copy link, and alternatives after a terminal result.
+- Buyer UI on every search product card: select 1–5 shops, create checks, poll
+  active status every three seconds, refresh the server-rendered search card on a
+  terminal change, show the latest confirmed price/stock, and render
+  alternatives. A browser-local session key scopes the check list.
+- Tokenized channels: `lnk_` for links and `sim_` for the demo simulator. Checks
+  expire after seven days and accept one response. `viewed_at` was added in
+  `drizzle/0001_seller_check_viewed_at.sql`; responses backfill it when needed.
+- Observations: seller answers insert immutable `offer_observations` and, when
+  hours are confirmed, `shop_observations`. Search now reads the latest
+  observation for price/stock and effective confirmed hours without modifying
+  dataset rows.
+- Deterministic demo: 55% in stock, 25% out of stock, 20% no answer after 6–12
+  seconds. Advancement is poll-driven, with no background timer. Demo mode also
+  exposes `/dev/seller-simulator` for manual overrides.
+- Deterministic alternatives: same product at another shop first, then similar
+  category/brand products within ±40% price; up to four with reasons, excluding
+  the current/out-of-stock offer.
+- Agent integration: `create_seller_check`, `get_seller_check_status`, and
+  `suggest_alternatives`; result cards show status/token links; status-only or
+  alternatives-only turns produce `AgentResult.kind = "seller"`; seller results
+  are never cached.
+- Docs: `docs/seller-loop.md`, README, `docs/agent.md`, `docs/data-model.md`,
+  `docs/search.md`, `.env.example`, and DECISIONS D-031…D-036.
+
+Verification:
+
+- `npm test`: 112 tests across 16 files (added token, result-shape, and prior
+  suite coverage). `npm run typecheck`, `npm run lint`, `npm run build`: pass.
+- Migration applied locally; Compose startup skips both applied migrations and
+  the app reports `phase: 4` with `db.status = "up"`.
+- Demo API checks: automatic in-stock and out-of-stock answers, no-answer
+  expiration, viewed timestamps, confirmed search counts, and three alternatives
+  on an out-of-stock/no-answer check.
+- Seller page checks: opening a token records viewed; one response updates the
+  observation/timeline; a second response returns `409`; an expired link shows
+  the no-answer state and alternatives.
+- Search/UI checks: seller panel opens on `/search`; active polling changes
+  pending checks to answered; the search card confirms stock and shows the
+  confirmed price/hours; `/s/[token]`, `/dev/seller-simulator`, `/assistant`,
+  `/search`, and `/api/agent/usage` return `200`.
+- Agent checks: explicit seller request created two tokenized checks; status-only
+  request returned `kind: "seller"` with one check and no fabricated product
+  cards.
+- Docker image rebuilt after the final code; Compose app healthy on `:3000`,
+  migration and seed-skip logs verified, and the full demo loop was exercised
+  inside the container.
+
+Notes:
+
+- Headless Chrome against `next dev` may log an HMR WebSocket error and hydrate
+  slowly; production `next start` and Compose hydrate correctly. Use the
+  production build for browser smoke tests.
+- Simulator timing advances only on polling; there is no outbound SMS/WhatsApp
+  provider yet. The buyer currently copies the seller link.
+- `APP_BASE_URL` must be a reachable public URL when links are sent outside the
+  local machine.
+- Seller identity is not authenticated in this phase; the capability token is
+  the access boundary. This is documented in `docs/seller-loop.md`.
+- Agent cards are grounded in tool output; model prose can still drift, so the
+  structured card/timeline is authoritative.
+
+## Next — Phase 5 (visit planning)
+
+- Visit planning and follow-up UX on top of confirmed seller data.

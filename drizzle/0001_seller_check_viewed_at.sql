@@ -1,0 +1,1 @@
+ALTER TABLE "seller_checks" ADD COLUMN IF NOT EXISTS "viewed_at" timestamp with time zone;

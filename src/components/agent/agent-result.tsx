@@ -12,6 +12,11 @@ import {
   SparkIcon,
   StoreIcon,
 } from "@/components/ui/icons";
+import {
+  SELLER_STATUS_CLASSES,
+  SELLER_STATUS_LABELS,
+} from "@/lib/seller-labels";
+import { SellerAlternatives } from "@/components/seller/seller-alternatives";
 
 const MODE_LABELS = {
   llm: "دستیار هوشمند",
@@ -46,10 +51,14 @@ export function AgentResultView({ result }: { result: AgentResult }) {
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <ModeBadge mode={result.mode} />
-        <span className="text-[9px] text-muted">
-          {formatNumber(result.totalGroups)} گروه ·{" "}
-          {formatNumber(result.totalOffers)} آفر
-        </span>
+        {result.kind === "seller" ? (
+          <span className="text-[9px] font-bold text-muted">وضعیت درخواست</span>
+        ) : (
+          <span className="text-[9px] text-muted">
+            {formatNumber(result.totalGroups)} گروه ·{" "}
+            {formatNumber(result.totalOffers)} آفر
+          </span>
+        )}
       </div>
 
       {winner ? (
@@ -137,30 +146,81 @@ export function AgentResultView({ result }: { result: AgentResult }) {
         </div>
       ) : null}
 
+      {result.sellerChecks && result.sellerChecks.length > 0 ? (
+        <div className="rounded-xl border border-brand-100 bg-brand-50/50 p-3">
+          <p className="flex items-center gap-1 text-[10px] font-bold text-brand-700">
+            <SparkIcon className="size-3.5" />
+            درخواست تأیید فروشنده
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {result.sellerChecks.slice(0, 5).map((check) => (
+              <li
+                key={check.token}
+                className="flex items-center justify-between gap-2 rounded-lg bg-white/80 px-2 py-1.5"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-[9px] font-bold">
+                    {check.shopName}
+                  </p>
+                  <p className="truncate text-[8px] text-muted">
+                    {check.productTitle}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1.5">
+                  <span
+                    className={cn(
+                      "rounded-full px-1.5 py-0.5 text-[8px] font-bold",
+                      SELLER_STATUS_CLASSES[check.status],
+                    )}
+                  >
+                    {SELLER_STATUS_LABELS[check.status]}
+                  </span>
+                  <Link
+                    href={check.linkPath}
+                    className="text-[9px] font-bold text-brand-700"
+                  >
+                    لینک
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1.5 text-[8px] leading-4 text-muted">
+            موجودی فقط بعد از پاسخ فروشنده تأییدشده می‌شود.
+          </p>
+        </div>
+      ) : null}
+
+      {result.alternatives && result.alternatives.length > 0 ? (
+        <SellerAlternatives alternatives={result.alternatives} />
+      ) : null}
+
       {result.fallbackReason ? (
         <p className="rounded-lg bg-warning/10 px-2 py-1.5 text-[9px] leading-4 text-warning">
           {result.fallbackReason}
         </p>
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href={searchHref(result.filters, { page: 1, limit: 12 })}
-          className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-ink px-3 py-2 text-[10px] font-bold text-white"
-        >
-          همهٔ نتایج جست‌وجو
-          <ChevronLeftIcon className="size-3" />
-        </Link>
-        {showCompare ? (
+      {result.kind !== "seller" ? (
+        <div className="flex flex-wrap gap-2">
           <Link
-            href={compareHref(result.compareIds, result.filters)}
-            className="flex items-center justify-center gap-1 rounded-xl border border-line px-3 py-2 text-[10px] font-bold text-muted"
+            href={searchHref(result.filters, { page: 1, limit: 12 })}
+            className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-ink px-3 py-2 text-[10px] font-bold text-white"
           >
-            <ScaleIcon className="size-3" />
-            مقایسه
+            همهٔ نتایج جست‌وجو
+            <ChevronLeftIcon className="size-3" />
           </Link>
-        ) : null}
-      </div>
+          {showCompare ? (
+            <Link
+              href={compareHref(result.compareIds, result.filters)}
+              className="flex items-center justify-center gap-1 rounded-xl border border-line px-3 py-2 text-[10px] font-bold text-muted"
+            >
+              <ScaleIcon className="size-3" />
+              مقایسه
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }
