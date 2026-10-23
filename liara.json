@@ -1,0 +1,9 @@
+{
+  "app": "torob-assistant",
+  "port": 3000,
+  "team-id": "6ad79485cf87f9a8e42157f1",
+  "build": {
+    "location": "germany"
+  },
+  "disks": []
+}
