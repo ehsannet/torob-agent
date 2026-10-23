@@ -18,10 +18,10 @@ function SearchError({ message }: { message: string }) {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col items-center justify-center gap-3 px-6 text-center">
       <h1 className="text-lg font-extrabold">جست‌وجو انجام نشد</h1>
-      <p className="text-sm leading-7 text-muted">{message}</p>
+      <p className="text-base leading-7 text-muted">{message}</p>
       <Link
         href="/search"
-        className="rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white"
+        className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white"
       >
         بازگشت به جست‌وجو
       </Link>

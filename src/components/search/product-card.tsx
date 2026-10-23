@@ -64,11 +64,11 @@ export function ProductCard({ group }: ProductCardProps) {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold text-brand-600">
+                <p className="text-[12px] font-semibold text-brand-600">
                   {group.product.brand ?? group.product.category}
                   {group.product.brand ? ` · ${group.product.category}` : ""}
                 </p>
-                <h2 className="mt-1 line-clamp-2 text-sm font-extrabold leading-6">
+                <h2 className="mt-1 line-clamp-2 text-base font-extrabold leading-6">
                   {group.product.titleFa}
                 </h2>
               </div>
@@ -79,7 +79,7 @@ export function ProductCard({ group }: ProductCardProps) {
                 aria-pressed={selected}
                 title={disabled ? "حداکثر چهار محصول" : "افزودن به مقایسه"}
                 className={cn(
-                  "flex shrink-0 items-center gap-1 rounded-xl border px-2 py-1.5 text-[10px] font-semibold transition",
+                  "flex shrink-0 items-center gap-1 rounded-xl border px-2 py-1.5 text-[12px] font-semibold transition",
                   selected
                     ? "border-brand-500 bg-brand-500 text-white"
                     : "border-line bg-white text-muted hover:border-brand-200 hover:text-brand-700",
@@ -92,13 +92,13 @@ export function ProductCard({ group }: ProductCardProps) {
             </div>
 
             <div className="mt-2 flex flex-wrap items-end gap-x-2 gap-y-1">
-              <p className="text-lg font-black text-brand-600">{priceText}</p>
+              <p className="text-lg font-black text-ink">{priceText}</p>
               {group.priceMax !== null && group.priceMax !== group.priceMin ? (
-                <p className="pb-0.5 text-[10px] text-muted">
+                <p className="pb-0.5 text-[12px] text-muted">
                   تا {formatToman(group.priceMax)}
                 </p>
               ) : null}
-              <span className="pb-0.5 text-[10px] text-muted">
+              <span className="pb-0.5 text-[12px] text-muted">
                 · {formatNumber(group.shopCount)} فروشگاه
               </span>
             </div>
@@ -107,14 +107,14 @@ export function ProductCard({ group }: ProductCardProps) {
 
         <div className="mt-3 flex flex-wrap gap-1.5">
           {group.nearestDistanceKm !== null ? (
-            <span className="flex items-center gap-1 rounded-full bg-page px-2 py-1 text-[10px] text-muted">
+            <span className="flex items-center gap-1 rounded-full bg-page px-2 py-1 text-[12px] text-muted">
               <PinIcon className="size-3" />
               {formatDistanceKm(group.nearestDistanceKm)}
             </span>
           ) : null}
           <span
             className={cn(
-              "flex items-center gap-1 rounded-full px-2 py-1 text-[10px]",
+              "flex items-center gap-1 rounded-full px-2 py-1 text-[12px]",
               group.openNowCount > 0
                 ? "bg-success/10 text-success"
                 : "bg-page text-muted",
@@ -125,7 +125,7 @@ export function ProductCard({ group }: ProductCardProps) {
               ? `${formatNumber(group.openNowCount)} فروشگاه باز`
               : "فعلاً بسته"}
           </span>
-          <span className="flex items-center gap-1 rounded-full bg-page px-2 py-1 text-[10px] text-muted">
+          <span className="flex items-center gap-1 rounded-full bg-page px-2 py-1 text-[12px] text-muted">
             <StoreIcon className="size-3" />
             {summarizeStock(group)}
           </span>
@@ -135,7 +135,7 @@ export function ProductCard({ group }: ProductCardProps) {
           {group.reasons.map((reason) => (
             <span
               key={reason}
-              className="flex items-center gap-1 rounded-lg bg-brand-50 px-2 py-1 text-[10px] font-medium text-brand-700"
+              className="flex items-center gap-1 rounded-lg bg-brand-50 px-2 py-1 text-[12px] font-medium text-brand-700"
             >
               {reason.includes("قدیمی") ? (
                 <SparkIcon className="size-3" />
@@ -150,16 +150,16 @@ export function ProductCard({ group }: ProductCardProps) {
 
       <div className="grid grid-cols-3 divide-x divide-x-reverse divide-line border-y border-line bg-page/50 text-center">
         <div className="px-2 py-2.5">
-          <p className="text-[9px] text-muted">قیمت ثبت‌شده</p>
-          <p className="mt-1 text-[10px] font-bold">
+          <p className="text-[11px] text-muted">قیمت ثبت‌شده</p>
+          <p className="mt-1 text-[12px] font-bold">
             {formatPriceRange(group.priceMin, group.priceMax)}
           </p>
         </div>
         <div className="px-2 py-2.5">
-          <p className="text-[9px] text-muted">آخرین تغییر</p>
+          <p className="text-[11px] text-muted">آخرین تغییر</p>
           <p
             className={cn(
-              "mt-1 text-[10px] font-bold",
+              "mt-1 text-[12px] font-bold",
               group.stalePrice ? "text-warning" : "text-ink",
             )}
           >
@@ -169,8 +169,8 @@ export function ProductCard({ group }: ProductCardProps) {
           </p>
         </div>
         <div className="px-2 py-2.5">
-          <p className="text-[9px] text-muted">موجودی تأییدشده</p>
-          <p className="mt-1 text-[10px] font-bold">{summarizeStock(group)}</p>
+          <p className="text-[11px] text-muted">موجودی تأییدشده</p>
+          <p className="mt-1 text-[12px] font-bold">{summarizeStock(group)}</p>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export function ProductCard({ group }: ProductCardProps) {
         ))}
         {restOffers.length > 0 ? (
           <details className="group rounded-2xl border border-line bg-white">
-            <summary className="cursor-pointer list-none px-3 py-2.5 text-center text-[10px] font-semibold text-brand-700">
+            <summary className="cursor-pointer list-none px-3 py-2.5 text-center text-[12px] font-semibold text-brand-700">
               نمایش {formatNumber(restOffers.length)} آفر دیگر
             </summary>
             <div className="space-y-2 border-t border-line p-2">
@@ -195,7 +195,7 @@ export function ProductCard({ group }: ProductCardProps) {
           </details>
         ) : null}
         {hiddenOffers > 0 ? (
-          <p className="text-center text-[9px] text-muted">
+          <p className="text-center text-[11px] text-muted">
             {formatNumber(hiddenOffers)} آفر دیگر نیز برای این محصول ثبت شده است.
           </p>
         ) : null}

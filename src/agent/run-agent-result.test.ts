@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AgentToolContext } from "./tools";
 import type { SellerAlternative, SellerCheckSummary } from "@/lib/seller-types";
 import type { SearchFilters } from "@/lib/search-types";
+import type { VisitPlan } from "@/lib/visit-plan";
 import { pickResult } from "./run-agent-result";
 
 const filters: SearchFilters = {
@@ -36,6 +37,25 @@ const check: SellerCheckSummary = {
   linkPath: "/s/sim_abcdefghijklmnop",
 };
 
+const visitPlan: VisitPlan = {
+  shopId: "shop-2",
+  shopName: "فروشگاه دوم",
+  addressText: "خیابان جمهوری، پاساژ نمونه",
+  addressLine: "خیابان جمهوری، پاساژ نمونه، طبقه ۲",
+  addressParts: ["خیابان جمهوری", "پاساژ نمونه", "طبقه ۲"],
+  approximateAddress: false,
+  routeUrl: "https://www.google.com/maps/dir/?api=1&destination=35.69,51.42",
+  openState: "open",
+  openLabel: "باز است",
+  closesAt: "21:00",
+  hoursConfirmedAt: null,
+  warnings: [],
+  productTitle: "محصول نمونه",
+  offerId: "offer-2",
+  priceToman: 1_100_000,
+  stockStatus: "unknown",
+};
+
 const alternative: SellerAlternative = {
   kind: "same_product",
   offerId: "offer-2",
@@ -59,6 +79,7 @@ function context(): AgentToolContext {
     shops: [],
     sellerChecks: [],
     alternatives: [],
+    visitPlans: [],
     error: null,
     lastAction: null,
   };
@@ -80,6 +101,36 @@ describe("agent seller result", () => {
     const result = pickResult(value, 15);
     expect(result?.kind).toBe("seller");
     expect(result?.alternatives).toHaveLength(1);
+  });
+
+  it("returns a visit-only result with its plan", () => {
+    const value = context();
+    value.visitPlans = [visitPlan];
+    const result = pickResult(value, 15);
+    expect(result?.kind).toBe("visit");
+    expect(result?.visitPlans).toHaveLength(1);
+    expect(result?.products).toHaveLength(0);
+  });
+
+  it("attaches a visit plan to a search result", () => {
+    const value = context();
+    value.search = {
+      filters,
+      result: {
+        filters,
+        groups: [],
+        totalGroups: 0,
+        totalOffers: 0,
+        categories: [],
+        priceBounds: { min: null, max: null },
+        tookMs: 1,
+        demo: false,
+      },
+    };
+    value.visitPlans = [visitPlan];
+    const result = pickResult(value, 15);
+    expect(result?.kind).toBe("search");
+    expect(result?.visitPlans).toHaveLength(1);
   });
 
   it("still returns null for an empty tool context", () => {

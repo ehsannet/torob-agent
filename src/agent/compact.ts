@@ -54,6 +54,7 @@ export function compactGroups(groups: ProductGroup[], limit = 5): AgentProduct[]
 export function compactOfferShops(offers: OfferView[]): AgentShop[] {
   return offers.slice(0, 5).map((offer) => ({
     offerId: offer.id,
+    shopId: offer.shopId,
     name: offer.shopName,
     distanceKm: offer.distanceKm,
     openState: offer.openStatus.state,

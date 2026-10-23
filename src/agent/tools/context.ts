@@ -10,6 +10,7 @@ import type {
   SearchFilters,
   SearchResult,
 } from "@/lib/search-types";
+import type { VisitPlan } from "@/lib/visit-plan";
 
 export type AgentToolContext = {
   baseFilters: SearchFilters;
@@ -25,6 +26,7 @@ export type AgentToolContext = {
   shops: AgentShop[];
   sellerChecks: SellerCheckSummary[];
   alternatives: SellerAlternative[];
+  visitPlans: VisitPlan[];
   error: string | null;
   lastAction: "search" | "compare" | null;
 };

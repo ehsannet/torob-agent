@@ -21,11 +21,11 @@ export function CompareView({ result, filters }: CompareViewProps) {
       <BrandHeader backHref={backHref} backLabel="بازگشت به نتایج" />
 
       <header className="rounded-card border border-line bg-surface p-4">
-        <p className="text-[10px] font-semibold text-brand-600">مقایسهٔ کنار هم</p>
+        <p className="text-[12px] font-semibold text-brand-600">مقایسهٔ کنار هم</p>
         <h1 className="mt-1 text-lg font-black">
           {formatNumber(groups.length)} محصول انتخاب‌شده
         </h1>
-        <p className="mt-2 text-[11px] leading-6 text-muted">
+        <p className="mt-2 text-[13px] leading-6 text-muted">
           قیمت ثبت‌شده، فاصله، ساعت کاری و وضعیت تأیید موجودی را ببین؛ سپس خودت
           تصمیم بگیر.
         </p>
@@ -38,10 +38,10 @@ export function CompareView({ result, filters }: CompareViewProps) {
               <SparkIcon className="size-5" />
             </span>
             <div className="min-w-0">
-              <p className="text-[10px] font-semibold text-brand-700">
+              <p className="text-[12px] font-semibold text-brand-700">
                 پیشنهاد ترب‌یار · قاعدهٔ داده، بدون LLM
               </p>
-              <h2 className="mt-1 text-sm font-extrabold leading-6">
+              <h2 className="mt-1 text-base font-extrabold leading-6">
                 {recommendation.title}
               </h2>
             </div>
@@ -50,13 +50,13 @@ export function CompareView({ result, filters }: CompareViewProps) {
             {recommendation.reasons.map((reason) => (
               <li
                 key={reason}
-                className="rounded-lg border border-brand-200 bg-white px-2 py-1 text-[10px] font-medium text-brand-700"
+                className="rounded-lg border border-brand-200 bg-white px-2 py-1 text-[12px] font-medium text-brand-700"
               >
                 {reason}
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-[9px] leading-5 text-muted">
+          <p className="mt-3 text-[11px] leading-5 text-muted">
             این پیشنهاد فقط بر اساس داده‌های همین صفحه است؛ موجودی و قیمت نهایی
             را از فروشنده تأیید کن.
           </p>
@@ -81,19 +81,19 @@ export function CompareView({ result, filters }: CompareViewProps) {
       <div className="flex gap-2">
         <Link
           href={backHref}
-          className="flex-1 rounded-xl bg-ink px-4 py-3 text-center text-xs font-bold text-white"
+          className="flex-1 rounded-xl bg-ink px-4 py-3 text-center text-sm font-bold text-white"
         >
           بازگشت به نتایج
         </Link>
         <Link
           href="/search"
-          className="flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-center text-xs font-semibold text-muted"
+          className="flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-center text-sm font-semibold text-muted"
         >
           مقایسهٔ جدید
         </Link>
       </div>
 
-      <footer className="text-center text-[10px] leading-6 text-muted">
+      <footer className="text-center text-[12px] leading-6 text-muted">
         قیمت‌ها ثبت‌شده‌اند؛ پیش از رفتن، قیمت و موجودی را از فروشنده بپرس.
       </footer>
     </main>

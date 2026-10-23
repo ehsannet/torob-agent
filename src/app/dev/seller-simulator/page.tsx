@@ -51,7 +51,7 @@ export default async function SellerSimulatorPage({
 
       <section className="rounded-card border border-brand-100 bg-brand-50/60 p-4">
         <h1 className="text-base font-black">شبیه‌ساز فروشنده</h1>
-        <p className="mt-1 text-[10px] leading-5 text-muted">
+        <p className="mt-1 text-[12px] leading-5 text-muted">
           این صفحه فقط در حالت دمو فعال است. یکی از درخواست‌های شبیه‌سازی‌شده را
           انتخاب کن و به‌جای فروشنده پاسخ بده.
         </p>
@@ -62,14 +62,14 @@ export default async function SellerSimulatorPage({
           <div className="rounded-card border border-line bg-surface p-4">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="text-[10px] font-bold">{view.shop.name}</p>
-                <p className="mt-1 text-[10px] text-muted">
+                <p className="text-[12px] font-bold">{view.shop.name}</p>
+                <p className="mt-1 text-[12px] text-muted">
                   {view.product.titleFa} · {formatToman(view.offer.priceToman)}
                 </p>
               </div>
               <span
                 className={cn(
-                  "rounded-full px-2 py-0.5 text-[9px] font-bold",
+                  "rounded-full px-2 py-0.5 text-[11px] font-bold",
                   SELLER_STATUS_CLASSES[view.status],
                 )}
               >
@@ -81,7 +81,7 @@ export default async function SellerSimulatorPage({
             </div>
             <Link
               href={`/s/${view.token}`}
-              className="mt-3 block text-[10px] font-bold text-brand-700"
+              className="mt-3 block text-[12px] font-bold text-brand-700"
             >
               باز کردن صفحهٔ خریدار
             </Link>
@@ -94,22 +94,22 @@ export default async function SellerSimulatorPage({
               simulated
             />
           ) : (
-            <p className="rounded-xl bg-page p-3 text-[10px] leading-5 text-muted">
+            <p className="rounded-xl bg-page p-3 text-[12px] leading-5 text-muted">
               این درخواست بسته شده است. برای تست دوباره از نتایج جست‌وجو درخواست
               تازه بساز.
             </p>
           )}
         </section>
       ) : (
-        <p className="rounded-xl border border-line bg-surface p-3 text-[10px] text-muted">
+        <p className="rounded-xl border border-line bg-surface p-3 text-[12px] text-muted">
           یک درخواست را از فهرست پایین انتخاب کن.
         </p>
       )}
 
       <section className="rounded-card border border-line bg-surface p-3">
-        <h2 className="text-xs font-extrabold">درخواست‌های دمو</h2>
+        <h2 className="text-sm font-extrabold">درخواست‌های دمو</h2>
         {checks.length === 0 ? (
-          <p className="mt-2 text-[10px] leading-5 text-muted">
+          <p className="mt-2 text-[12px] leading-5 text-muted">
             هنوز درخواستی ساخته نشده است. از نتایج جست‌وجو، «از فروشنده بپرس» را
             بزن.
           </p>
@@ -127,16 +127,16 @@ export default async function SellerSimulatorPage({
                   )}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-[10px] font-bold">
+                    <span className="block truncate text-[12px] font-bold">
                       {check.shop_name}
                     </span>
-                    <span className="block truncate text-[9px] text-muted">
+                    <span className="block truncate text-[11px] text-muted">
                       {check.product_title} · {formatRelativeTime(check.created_at)}
                     </span>
                   </span>
                   <span
                     className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold",
+                      "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold",
                       SELLER_STATUS_CLASSES[check.status],
                     )}
                   >
@@ -149,7 +149,7 @@ export default async function SellerSimulatorPage({
         )}
       </section>
 
-      <p className="text-center text-[9px] leading-5 text-muted">
+      <p className="text-center text-[11px] leading-5 text-muted">
         پاسخ خودکار دمو پس از ۶ تا ۱۲ ثانیه و هنگام درخواست وضعیت ثبت می‌شود.
       </p>
     </main>

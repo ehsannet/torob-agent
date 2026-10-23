@@ -39,14 +39,14 @@ export function SearchForm({
         aria-label="جست‌وجوی محصول"
         className={cn(
           "w-full rounded-2xl border border-line bg-surface pr-11 pl-24 text-ink shadow-sm outline-none transition placeholder:text-muted/70 focus:border-brand-300 focus:ring-4 focus:ring-brand-100",
-          compact ? "h-11 text-xs" : "h-14 text-sm",
+          compact ? "h-11 text-sm" : "h-14 text-base",
         )}
       />
       <button
         type="submit"
         className={cn(
           "absolute left-1.5 top-1/2 -translate-y-1/2 rounded-xl bg-brand-500 font-bold text-white transition hover:bg-brand-600",
-          compact ? "px-3 py-2 text-[10px]" : "px-4 py-2.5 text-xs",
+          compact ? "px-3 py-2 text-[12px]" : "px-4 py-2.5 text-sm",
         )}
       >
         جست‌وجو

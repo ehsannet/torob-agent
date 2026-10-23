@@ -343,6 +343,125 @@ Notes:
 - Agent cards are grounded in tool output; model prose can still drift, so the
   structured card/timeline is authoritative.
 
-## Next — Phase 5 (visit planning)
+## Phase 5 — visit planning (complete)
 
-- Visit planning and follow-up UX on top of confirmed seller data.
+Done:
+
+- Rule-based Persian address extraction in `src/lib/address.ts`: mall/mall-like
+  building, floor (including `همکف`/`زیرهمکف`), unit (`واحد`/`مغازه`/`حجره` and
+  `پلاک` fallback), main/side street, landmark, Arabic-character normalization
+  for matching, and a confidence score. Explicit structured fields win over
+  extracted values; unknown text stays `آدرس نامشخص` at `0.2`.
+- Import-time extraction in `src/data/import/mapping.ts`; `confidenceValue`
+  no longer invents `0.5` when the source has no confidence.
+- Non-destructive backfill `scripts/backfill-addresses.ts` + `npm run
+  data:addresses` (dry-run by default, `--apply`, `--limit`). Optional `--llm`
+  extracts only the remaining unstructured rows and caches results in
+  `.cache/address-extractions.json` (gitignored); every returned field is
+  checked against the source text before use.
+- Visit plans in `src/lib/visit-plan.ts`: structured address line, Google Maps
+  directions URL, open state/label/closing time, confirmed-hours flag, and up to
+  five warnings (out of stock, unknown stock, approximate address, incomplete
+  floor/unit, closed, unknown hours, closing soon, stale price).
+- Shop detail route `/shops/[id]` (server-rendered, `force-dynamic`) with open
+  status, today's/weekly hours, confirmed-hours badge, route button, address
+  breakdown, warnings, contact/features, and this shop's offers. Every search
+  shop card now shows the structured address, landmark, open state, route link,
+  approximate/incomplete warnings, and a link to the detail page. The seller
+  page `/s/[token]` uses the same address/route presentation.
+- Agent tool `get_visit_plan` (offer ID or shop ID) and `AgentResult.kind =
+  "visit"` when a turn is visit-only. Visit results include the plan cards and
+  bypass the reply cache. Prompt instructions and result cards updated.
+- Docs: `docs/data-model.md`, `docs/search.md`, `docs/agent.md`, README,
+  `docs/data-quality-report.md`, and DECISIONS D-037…D-040.
+
+Verification:
+
+- `npm test`: 128 tests across 18 files. `npm run typecheck`, `npm run lint`,
+  and `npm run build`: pass.
+- Backfill on the real DB (6,476 shops): mall 4,125, floor 4,248, unit 6,013,
+  street 6,424; 287 approximate (`4.4%`) using the `0.65` threshold. The local
+  rules left 291 rows without mall/floor/unit; the cached LLM pass filled 10
+  additional rows with source-checked fields and 0 failed batches.
+- Docker image rebuilt; Compose is healthy on `:3000` and `/api/health` reports
+  `phase: 5` with `db.status = "up"`.
+- API checks: `/shops/shop_0b713b699c263daa06a76f31` renders the mall, floor,
+  unit, weekly hours, offers, and Google Maps route; approximate shop
+  `shop_bb1c15ee07f5553534aa4010` and the matching search card render
+  «آدرس تقریبی» after expanding the extra offers. `/s/[token]` still renders
+  the route link.
+- Headless Chrome at 390×844: search card links to shop detail, shop detail
+  shows address/open status/hours/offers/route, and no runtime exceptions were
+  recorded.
+- Agent check: a Persian iPhone request returned a search result plus one visit
+  plan (address, open state, stock warning, route URL). A visit-only result is
+  covered by the result-shape unit test.
+
+Notes:
+
+- The route URL uses coordinates when available, otherwise the raw address. It
+  opens Google Maps in a new tab; no map SDK or API key is required.
+- Approximate address means a confidence below `0.65`, not a separate geo
+  database. The UI tells buyers to confirm the exact address before travelling.
+- LLM leftovers are opt-in (`--llm`) and cached; the normal import/backfill path
+  stays deterministic. The current cache is local and not committed.
+
+## Phase 6 — Polish (complete)
+
+Done:
+
+- Studied Torob's light mobile web at 390px via Chrome DevTools Protocol and
+  recorded the reusable values in `docs/design-tokens.md`. Runtime tokens live in
+  the `@theme` block of `src/app/globals.css`: brand red scale, slate page/ink/
+  line colors, promo green accent, 16px card and 12px field radii, and card/
+  float shadows. The app is intentionally light-only.
+- Bumped the base type scale for phone readability, moved product/shop/compare/
+  agent prices to ink (red is reserved for actions and brand badges), reworked
+  the home trust strip into three readable rows, and let long category names
+  wrap to two lines. Added the simple text wordmark treatment and replaced the
+  visible phase pill with «دمو»; the phase number is exposed only by
+  `/api/health`.
+- Added shared `PageStatus` and `RouteError` components plus route-level
+  `error.tsx`/`loading.tsx` for home, search, compare, shop, seller, and the root
+  `not-found.tsx`/`global-error.tsx`. Empty search, not-found, and loading
+  skeletons use the same surface, radius, and copy tone.
+- PWA: `src/app/manifest.ts` (fa/rtl, standalone, portrait, theme/bg colors),
+  any/maskable 192/512 icons, `apple-icon.png`, a production-only registration
+  component, and a scope-root no-op service worker. The manifest parses with zero
+  errors and Chrome reports zero installability errors; offline caching is
+  intentionally out of scope.
+- Persian copy pass across the buyer, seller, and assistant surfaces:
+  consistent «ترب‌یار»، «دستیار»، «جست‌وجو»، «مقایسه»، half-spaces, Persian
+  digits, and no stray Arabic characters. Labels keep the dataset's exact
+  category strings.
+- Performance pass on the production build with CDP: home TTFB ≈12ms / FCP
+  ≈128ms / ≈33KB transferred; search TTFB ≈29ms with data ready in ≈0.7s. The
+  Vazirmatn font is self-hosted and preloaded; there are no external font or CDN
+  requests.
+
+Verification:
+
+- `npm run typecheck`, `npm run lint`, `npm test` (128 tests / 18 files), and
+  `npm run build`: pass.
+- Headless Chrome at 390×844 checked home, search results, empty search,
+  compare, shop detail, seller page, assistant, and the 404 page: no horizontal
+  page overflow and no runtime exceptions. The two-column compare strip and the
+  category chips are intentional horizontal scrollers.
+- PWA checks: manifest URL loads, icons are valid PNGs (192/512/maskable 512),
+  `/sw.js` is served at scope `/`, and the service worker reaches `activated` in
+  the production build.
+- Docker image rebuilt; Compose is healthy on `:3000` and `/api/health` reports
+  `phase: 6` with `db.status = "up"`.
+
+Notes:
+
+- Torob's layout, palette, and density were used as inspiration only; no assets,
+  logo, or copy were copied. Vazirmatn remains the required font replacement.
+- The no-op service worker exists for installability; a real offline/cache
+  strategy is deferred.
+
+## Next — Phase 7
+
+- Replace the real-dataset mapping, import, run the data-quality report,
+  reindex, re-run address extraction, deploy to Liara, and verify health and LLM
+  access from the server.

@@ -49,7 +49,7 @@ export function SearchView({ result }: { result: SearchResult }) {
         <SearchForm defaultValue={filters.q} compact preserve={filters} />
         <Link
           href={assistantHref(filters)}
-          className="flex items-center justify-between gap-2 rounded-xl border border-brand-200 bg-brand-50/60 px-3 py-2 text-[10px] font-bold text-brand-700"
+          className="flex items-center justify-between gap-2 rounded-xl border border-brand-200 bg-brand-50/60 px-3 py-2 text-[12px] font-bold text-brand-700"
         >
           <span className="flex items-center gap-1.5">
             <SparkIcon className="size-3.5" />
@@ -66,12 +66,12 @@ export function SearchView({ result }: { result: SearchResult }) {
             totalGroups={result.totalGroups}
           />
           <div className="flex min-w-0 flex-1 items-center justify-between gap-2 rounded-xl border border-line bg-surface px-3 py-2.5">
-            <p className="truncate text-[10px] text-muted">
+            <p className="truncate text-[12px] text-muted">
               {hasResults
                 ? `${formatNumber(result.totalGroups)} محصول · ${formatNumber(result.totalOffers)} آفر`
                 : "نتیجه‌ای پیدا نشد"}
             </p>
-            <p className="shrink-0 text-[10px] font-semibold text-ink">
+            <p className="shrink-0 text-[12px] font-semibold text-ink">
               {SORT_LABELS[filters.sort]}
             </p>
           </div>
@@ -82,7 +82,7 @@ export function SearchView({ result }: { result: SearchResult }) {
             href={searchHref(filters, { category: null, page: 1 })}
             scroll={false}
             className={cn(
-              "shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition",
+              "shrink-0 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition",
               filters.category === null
                 ? "border-ink bg-ink text-white"
                 : "border-line bg-surface text-muted",
@@ -99,7 +99,7 @@ export function SearchView({ result }: { result: SearchResult }) {
               })}
               scroll={false}
               className={cn(
-                "shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition",
+                "shrink-0 rounded-full border px-3 py-1.5 text-[13px] font-semibold transition",
                 filters.category === category.value
                   ? "border-ink bg-ink text-white"
                   : "border-line bg-surface text-muted",
@@ -123,17 +123,17 @@ export function SearchView({ result }: { result: SearchResult }) {
             <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-brand-50 text-brand-600">
               <SearchIcon className="size-6" />
             </span>
-            <h2 className="mt-3 text-sm font-extrabold">
+            <h2 className="mt-3 text-base font-extrabold">
               در این محدوده چیزی پیدا نشد
             </h2>
-            <p className="mt-2 text-xs leading-6 text-muted">
+            <p className="mt-2 text-sm leading-6 text-muted">
               عبارت کوتاه‌تری امتحان کن، دسته را عوض کن یا فیلترهای محدودکننده
               را بردار.
             </p>
             <div className="mt-4 flex justify-center gap-2">
               <Link
                 href="/search"
-                className="rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white"
+                className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white"
               >
                 جست‌وجوی تازه
               </Link>
@@ -153,7 +153,7 @@ export function SearchView({ result }: { result: SearchResult }) {
                     fastDelivery: false,
                     page: 1,
                   })}
-                  className="rounded-xl border border-line px-4 py-2 text-xs font-semibold text-muted"
+                  className="rounded-xl border border-line px-4 py-2 text-sm font-semibold text-muted"
                 >
                   حذف فیلترها
                 </Link>
@@ -170,34 +170,34 @@ export function SearchView({ result }: { result: SearchResult }) {
             {filters.page > 1 ? (
               <Link
                 href={searchHref(filters, { page: filters.page - 1 })}
-                className="rounded-lg px-3 py-1.5 text-[11px] font-semibold text-brand-700"
+                className="rounded-lg px-3 py-1.5 text-[13px] font-semibold text-brand-700"
               >
                 صفحهٔ قبل
               </Link>
             ) : (
-              <span className="px-3 py-1.5 text-[11px] text-muted/50">
+              <span className="px-3 py-1.5 text-[13px] text-muted/50">
                 صفحهٔ قبل
               </span>
             )}
-            <span className="text-[10px] text-muted">
+            <span className="text-[12px] text-muted">
               {formatNumber(filters.page)} از {formatNumber(totalPages)}
             </span>
             {filters.page < totalPages ? (
               <Link
                 href={searchHref(filters, { page: filters.page + 1 })}
-                className="rounded-lg px-3 py-1.5 text-[11px] font-semibold text-brand-700"
+                className="rounded-lg px-3 py-1.5 text-[13px] font-semibold text-brand-700"
               >
                 صفحهٔ بعد
               </Link>
             ) : (
-              <span className="px-3 py-1.5 text-[11px] text-muted/50">
+              <span className="px-3 py-1.5 text-[13px] text-muted/50">
                 صفحهٔ بعد
               </span>
             )}
           </nav>
         ) : null}
 
-        <footer className="mt-auto pt-3 text-center text-[10px] leading-6 text-muted">
+        <footer className="mt-auto pt-3 text-center text-[12px] leading-6 text-muted">
           <p className="flex items-center justify-center gap-1">
             <SparkIcon className="size-3 text-brand-500" />
             دادهٔ واقعی ترب؛ قیمت‌ها و ساعت‌ها قبل از خرید باید تأیید شوند.

@@ -100,8 +100,8 @@ export function SellerResponseForm({
         <span className="mx-auto grid size-10 place-items-center rounded-full bg-success/10 text-success">
           <CheckIcon className="size-5" />
         </span>
-        <p className="mt-2 text-xs font-bold text-success">پاسخ ثبت شد</p>
-        <p className="mt-1 text-[10px] leading-5 text-muted">
+        <p className="mt-2 text-sm font-bold text-success">پاسخ ثبت شد</p>
+        <p className="mt-1 text-[12px] leading-5 text-muted">
           قیمت و موجودی این آفر برای خریدار به‌روز می‌شود.
         </p>
       </div>
@@ -110,21 +110,21 @@ export function SellerResponseForm({
 
   return (
     <section className="rounded-2xl border border-line bg-white p-4">
-      <h2 className="text-sm font-extrabold">پاسخ یک‌لمسی به خریدار</h2>
-      <p className="mt-1 text-[10px] leading-5 text-muted">
+      <h2 className="text-base font-extrabold">پاسخ یک‌لمسی به خریدار</h2>
+      <p className="mt-1 text-[12px] leading-5 text-muted">
         {simulated
           ? "این درخواست در حالت دمو است؛ پاسخ خودکار هم پس از چند ثانیه ثبت می‌شود."
           : "پاسخ تو فقط برای به‌روزرسانی قیمت و موجودی همین آفر استفاده می‌شود."}
       </p>
 
-      <p className="mt-3 text-[10px] font-bold">این محصول الآن موجود است؟</p>
+      <p className="mt-3 text-[12px] font-bold">این محصول الآن موجود است؟</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         <button
           type="button"
           onClick={() => setStockStatus("in_stock")}
           aria-pressed={stockStatus === "in_stock"}
           className={cn(
-            "min-h-12 rounded-xl border px-3 py-3 text-xs font-bold transition",
+            "min-h-12 rounded-xl border px-3 py-3 text-sm font-bold transition",
             stockStatus === "in_stock"
               ? "border-success bg-success text-white"
               : "border-line bg-white text-ink hover:border-success/40",
@@ -140,7 +140,7 @@ export function SellerResponseForm({
           }}
           aria-pressed={stockStatus === "out_of_stock"}
           className={cn(
-            "min-h-12 rounded-xl border px-3 py-3 text-xs font-bold transition",
+            "min-h-12 rounded-xl border px-3 py-3 text-sm font-bold transition",
             stockStatus === "out_of_stock"
               ? "border-danger bg-danger text-white"
               : "border-line bg-white text-ink hover:border-danger/40",
@@ -152,15 +152,15 @@ export function SellerResponseForm({
 
       {stockStatus === "in_stock" ? (
         <label className="mt-3 block">
-          <span className="text-[10px] font-bold">قیمت فعلی به تومان</span>
+          <span className="text-[12px] font-bold">قیمت فعلی به تومان</span>
           <input
             value={price}
             onChange={(event) => setPrice(event.target.value)}
             inputMode="numeric"
             placeholder={priceToman ? String(priceToman) : "مثلاً 45000000"}
-            className="mt-1 min-h-11 w-full rounded-xl border border-line bg-page/50 px-3 py-2 text-xs outline-none focus:border-brand-300"
+            className="mt-1 min-h-11 w-full rounded-xl border border-line bg-page/50 px-3 py-2 text-sm outline-none focus:border-brand-300"
           />
-          <span className="mt-1 block text-[9px] text-muted">
+          <span className="mt-1 block text-[11px] text-muted">
             قیمت ثبت‌شده: {formatToman(priceToman)}؛ اگر تغییری نکرده، خالی هم می‌توانی بگذاری.
           </span>
         </label>
@@ -174,7 +174,7 @@ export function SellerResponseForm({
             onChange={(event) => setHoursConfirmed(event.target.checked)}
             className="mt-0.5 size-4 accent-[var(--color-brand-500)]"
           />
-          <span className="text-[10px] leading-5">
+          <span className="text-[12px] leading-5">
             ساعت کاری ثبت‌شده برای این فروشگاه درست است.
           </span>
         </label>
@@ -188,26 +188,26 @@ export function SellerResponseForm({
             onChange={(event) => setWarrantyConfirmed(event.target.checked)}
             className="mt-0.5 size-4 accent-[var(--color-brand-500)]"
           />
-          <span className="text-[10px] leading-5">
+          <span className="text-[12px] leading-5">
             گارانتی ثبت‌شده برای این محصول معتبر است.
           </span>
         </label>
       ) : null}
 
       <label className="mt-3 block">
-        <span className="text-[10px] font-bold">توضیح اختیاری</span>
+        <span className="text-[12px] font-bold">توضیح اختیاری</span>
         <textarea
           value={note}
           onChange={(event) => setNote(event.target.value)}
           rows={2}
           maxLength={300}
           placeholder="مثلاً رنگ یا مدل موجود"
-          className="mt-1 w-full resize-none rounded-xl border border-line bg-page/50 px-3 py-2 text-xs leading-6 outline-none focus:border-brand-300"
+          className="mt-1 w-full resize-none rounded-xl border border-line bg-page/50 px-3 py-2 text-sm leading-6 outline-none focus:border-brand-300"
         />
       </label>
 
       {error ? (
-        <p className="mt-2 rounded-lg bg-danger/10 px-2.5 py-2 text-[10px] text-danger">
+        <p className="mt-2 rounded-lg bg-danger/10 px-2.5 py-2 text-[12px] text-danger">
           {error}
         </p>
       ) : null}
@@ -216,7 +216,7 @@ export function SellerResponseForm({
         type="button"
         onClick={() => void submit()}
         disabled={busy || !stockStatus}
-        className="mt-3 min-h-12 w-full rounded-xl bg-brand-500 px-4 py-3 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-3 min-h-12 w-full rounded-xl bg-brand-500 px-4 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
       >
         {busy ? "در حال ثبت…" : "ثبت پاسخ"}
       </button>

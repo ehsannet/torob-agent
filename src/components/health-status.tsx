@@ -73,15 +73,15 @@ export function HealthStatus() {
       className="rounded-card border border-line bg-surface p-4 shadow-sm"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 id="status-title" className="text-sm font-bold">
+        <h2 id="status-title" className="text-base font-bold">
           وضعیت سامانه
         </h2>
-        <span className="text-[11px] text-muted">بررسی زنده</span>
+        <span className="text-[13px] text-muted">بررسی زنده</span>
       </div>
 
       <div role="status" aria-live="polite">
         {state.kind === "loading" && (
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <div className="flex items-center gap-2 text-sm text-muted">
             <span className="size-2 animate-pulse rounded-full bg-brand-500" />
             در حال بررسی وضعیت سرور…
           </div>
@@ -89,14 +89,14 @@ export function HealthStatus() {
 
         {state.kind === "error" && (
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-danger">دریافت وضعیت سرور ممکن نشد.</p>
+            <p className="text-sm text-danger">دریافت وضعیت سرور ممکن نشد.</p>
             <button
               type="button"
               onClick={() => {
                 setState({ kind: "loading" });
                 setAttempt((value) => value + 1);
               }}
-              className="rounded-full border border-line px-3 py-1.5 text-xs font-medium"
+              className="rounded-full border border-line px-3 py-1.5 text-sm font-medium"
             >
               تلاش دوباره
             </button>
@@ -107,15 +107,15 @@ export function HealthStatus() {
           <div className="flex flex-col gap-2.5">
             <dl className="grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-page p-3">
-                <dt className="text-[11px] text-muted">سرور</dt>
-                <dd className="mt-1 flex items-center gap-1.5 text-xs font-bold">
+                <dt className="text-[13px] text-muted">سرور</dt>
+                <dd className="mt-1 flex items-center gap-1.5 text-sm font-bold">
                   <span className="size-2 rounded-full bg-success" />
                   فعال
                 </dd>
               </div>
               <div className="rounded-xl bg-page p-3">
-                <dt className="text-[11px] text-muted">دیتابیس</dt>
-                <dd className="mt-1 flex items-center gap-1.5 text-xs font-bold">
+                <dt className="text-[13px] text-muted">دیتابیس</dt>
+                <dd className="mt-1 flex items-center gap-1.5 text-sm font-bold">
                   <span
                     className={`size-2 rounded-full ${dbTones[state.data.db.status]}`}
                   />
@@ -128,7 +128,7 @@ export function HealthStatus() {
                 </dd>
               </div>
             </dl>
-            <p className="text-[11px] leading-5 text-muted">
+            <p className="text-[13px] leading-5 text-muted">
               آخرین بررسی: {faDateTime.format(new Date(state.data.timestamp))}
             </p>
           </div>

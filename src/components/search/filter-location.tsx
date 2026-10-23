@@ -26,11 +26,11 @@ export function LocationField({
     <div className="rounded-2xl border border-line bg-page/50 p-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="flex items-center gap-1 text-xs font-bold">
+          <p className="flex items-center gap-1 text-sm font-bold">
             <PinIcon className="size-3.5 text-brand-600" />
             جست‌وجو نزدیک من
           </p>
-          <p className="mt-1 text-[10px] leading-5 text-muted">
+          <p className="mt-1 text-[12px] leading-5 text-muted">
             {lat !== null
               ? `موقعیت فعلی ثبت شد · شعاع ${formatNumber(radiusKm)} کیلومتر`
               : "با اجازهٔ موقعیت، فروشگاه‌های اطراف را اول می‌بینی."}
@@ -40,7 +40,7 @@ export function LocationField({
           <button
             type="button"
             onClick={onClear}
-            className="shrink-0 text-[10px] font-semibold text-danger"
+            className="shrink-0 text-[12px] font-semibold text-danger"
           >
             حذف
           </button>
@@ -51,7 +51,7 @@ export function LocationField({
           type="button"
           onClick={onLocate}
           disabled={busy}
-          className="rounded-xl bg-ink px-3 py-2 text-[10px] font-bold text-white disabled:opacity-50"
+          className="rounded-xl bg-ink px-3 py-2 text-[12px] font-bold text-white disabled:opacity-50"
         >
           {busy ? "در حال دریافت…" : "موقعیت من"}
         </button>
@@ -59,7 +59,7 @@ export function LocationField({
           <select
             value={radiusKm}
             onChange={(event) => onRadiusChange(Number(event.target.value))}
-            className="rounded-xl border border-line bg-white px-2 py-2 text-[10px]"
+            className="rounded-xl border border-line bg-white px-2 py-2 text-[12px]"
           >
             {[1, 2, 3, 5, 10].map((radius) => (
               <option key={radius} value={radius}>
@@ -70,7 +70,7 @@ export function LocationField({
         ) : null}
       </div>
       {message ? (
-        <p className="mt-2 text-[10px] text-warning">{message}</p>
+        <p className="mt-2 text-[12px] text-warning">{message}</p>
       ) : null}
     </div>
   );

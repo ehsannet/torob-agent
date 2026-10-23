@@ -15,6 +15,11 @@ type Stats = {
   shops_without_coords: number;
   shops_outside_tehran: number;
   shops_without_landmark: number;
+  shops_without_mall: number;
+  shops_without_floor: number;
+  shops_without_unit: number;
+  shops_without_street: number;
+  shops_approximate_addresses: number;
   products_without_brand: number;
   products_without_specs: number;
   products_without_images: number;
@@ -71,6 +76,11 @@ async function main(): Promise<void> {
         (select count(*)::int from shops where latitude is null or longitude is null) as shops_without_coords,
         (select count(*)::int from shops where latitude is not null and (latitude < 35.5 or latitude > 35.85 or longitude < 51.2 or longitude > 51.6)) as shops_outside_tehran,
         (select count(*)::int from shops where landmark is null) as shops_without_landmark,
+        (select count(*)::int from shops where mall_name is null) as shops_without_mall,
+        (select count(*)::int from shops where floor is null) as shops_without_floor,
+        (select count(*)::int from shops where unit is null) as shops_without_unit,
+        (select count(*)::int from shops where street is null) as shops_without_street,
+        (select count(*)::int from shops where address_confidence < 0.65) as shops_approximate_addresses,
         (select count(*)::int from products where brand is null) as products_without_brand,
         (select count(*)::int from products where specs = '{}'::jsonb) as products_without_specs,
         (select count(*)::int from products where cardinality(images) = 0) as products_without_images,
@@ -126,6 +136,11 @@ async function main(): Promise<void> {
       `| فروشگاه | تلفن | ${number(stats.shops_without_phone)} | ${percent(stats.shops_without_phone, stats.shops)} |`,
       `| فروشگاه | مختصات | ${number(stats.shops_without_coords)} | ${percent(stats.shops_without_coords, stats.shops)} |`,
       `| فروشگاه | نشانهٔ محلی | ${number(stats.shops_without_landmark)} | ${percent(stats.shops_without_landmark, stats.shops)} |`,
+      `| فروشگاه | پاساژ/مجتمع | ${number(stats.shops_without_mall)} | ${percent(stats.shops_without_mall, stats.shops)} |`,
+      `| فروشگاه | طبقه | ${number(stats.shops_without_floor)} | ${percent(stats.shops_without_floor, stats.shops)} |`,
+      `| فروشگاه | واحد | ${number(stats.shops_without_unit)} | ${percent(stats.shops_without_unit, stats.shops)} |`,
+      `| فروشگاه | خیابان | ${number(stats.shops_without_street)} | ${percent(stats.shops_without_street, stats.shops)} |`,
+      `| فروشگاه | نشانی تقریبی (اعتماد < ۰٫۶۵) | ${number(stats.shops_approximate_addresses)} | ${percent(stats.shops_approximate_addresses, stats.shops)} |`,
       `| محصول | برند | ${number(stats.products_without_brand)} | ${percent(stats.products_without_brand, stats.products)} |`,
       `| محصول | مشخصات | ${number(stats.products_without_specs)} | ${percent(stats.products_without_specs, stats.products)} |`,
       `| محصول | تصویر | ${number(stats.products_without_images)} | ${percent(stats.products_without_images, stats.products)} |`,
@@ -147,6 +162,7 @@ async function main(): Promise<void> {
       `- فروشگاه‌های خارج از کادر تهران: ${number(stats.shops_outside_tehran)}.`,
       `- دسته‌های فعالیت فروشگاه: ${number(stats.shop_categories)}؛ دسته‌های محصول: ${number(stats.product_categories)}.`,
       `- بیشترین پیشنهاد در یک فروشگاه: ${number(stats.max_offers_per_shop)}.`,
+      `- نشانی‌های تقریبی: ${number(stats.shops_approximate_addresses)} (${percent(stats.shops_approximate_addresses, stats.shops)})؛ این فروشگاه‌ها در رابط کاربری هشدار «آدرس تقریبی» می‌گیرند.`,
       "",
       "### پرتکرارترین دسته‌های محصول",
       "",

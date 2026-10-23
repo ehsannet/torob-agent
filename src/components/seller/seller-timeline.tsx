@@ -30,16 +30,16 @@ export function SellerTimeline({
           <div className="min-w-0 flex-1">
             <p
               className={cn(
-                "text-[10px] font-semibold",
+                "text-[12px] font-semibold",
                 step.state === "pending" ? "text-muted" : "text-ink",
-                compact && "text-[9px]",
+                compact && "text-[11px]",
               )}
             >
               {step.label}
             </p>
             {step.at && (step.state === "done" || step.state === "failed") ? (
               <p
-                className="mt-0.5 text-[9px] text-muted"
+                className="mt-0.5 text-[11px] text-muted"
                 title={formatAbsoluteDate(step.at)}
               >
                 {formatRelativeTime(step.at)}

@@ -37,12 +37,12 @@ const trustItems = [
   {
     icon: ClockIcon,
     title: "آخرین تغییر",
-    text: "قدمت قیمت را می‌بینی؛ قیمت کهنه هشدار دارد.",
+    text: "قدمت قیمت مشخص است و قیمت کهنه هشدار دارد.",
   },
   {
     icon: ShieldIcon,
     title: "موجودی تأییدشده",
-    text: "تا وقتی فروشنده تأیید نکند، «نامشخص» است.",
+    text: "تا تأیید فروشنده، «نامشخص» است.",
   },
 ];
 
@@ -63,7 +63,7 @@ export default function Home() {
           className="absolute -left-12 -top-16 size-40 rounded-full bg-brand-100/60 blur-3xl"
         />
         <div className="relative">
-          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[12px] font-bold text-brand-700">
             <SparkIcon className="size-3" />
             دادهٔ واقعی ترب: ۶٬۴۷۶ فروشگاه
           </span>
@@ -71,7 +71,7 @@ export default function Home() {
             قبل از رفتن،
             <span className="text-brand-600"> فروشگاه درست</span> را پیدا کن.
           </h1>
-          <p className="mt-2 text-xs leading-6 text-muted">
+          <p className="mt-2 text-sm leading-6 text-muted">
             قیمت‌های اطراف را ببین، ساعت کاری و فاصله را مقایسه کن و بدان چه
             چیزی تأیید شده و چه چیزی هنوز نامشخص است.
           </p>
@@ -84,7 +84,7 @@ export default function Home() {
             href="/assistant"
             className="mt-3 flex items-center justify-between gap-2 rounded-xl border border-brand-200 bg-brand-50/70 px-3 py-2.5 transition hover:border-brand-500"
           >
-            <span className="flex items-center gap-1.5 text-[10px] font-bold text-brand-700">
+            <span className="flex items-center gap-1.5 text-[12px] font-bold text-brand-700">
               <SparkIcon className="size-3.5" />
               نمی‌دانی چه بنویسی؟ از دستیار خرید بپرس
             </span>
@@ -96,7 +96,7 @@ export default function Home() {
               <Link
                 key={query}
                 href={`/search?q=${encodeURIComponent(query)}`}
-                className="rounded-full border border-line bg-page px-2.5 py-1 text-[10px] font-medium text-muted transition hover:border-brand-200 hover:text-brand-700"
+                className="rounded-full border border-line bg-page px-2.5 py-1 text-[12px] font-medium text-muted transition hover:border-brand-200 hover:text-brand-700"
               >
                 {query}
               </Link>
@@ -105,30 +105,33 @@ export default function Home() {
         </div>
       </section>
 
-      <section aria-label="شفافیت داده" className="grid grid-cols-3 gap-2">
-        {trustItems.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-line bg-surface p-2.5"
-            >
-              <Icon className="size-4 text-brand-600" />
-              <p className="mt-1.5 text-[10px] font-extrabold">{item.title}</p>
-              <p className="mt-1 text-[9px] leading-5 text-muted">{item.text}</p>
-            </div>
-          );
-        })}
+      <section aria-label="شفافیت داده" className="rounded-card border border-line bg-surface px-3 py-2">
+        <div className="divide-y divide-line">
+          {trustItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.title} className="flex items-start gap-2.5 py-2 first:pt-0 last:pb-0">
+                <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-600">
+                  <Icon className="size-3.5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[12px] font-extrabold">{item.title}</p>
+                  <p className="mt-0.5 text-[11px] leading-5 text-muted">{item.text}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
 
       <section aria-labelledby="categories-title">
         <div className="mb-2 flex items-center justify-between px-1">
-          <h2 id="categories-title" className="text-sm font-bold">
+          <h2 id="categories-title" className="text-base font-bold">
             دسته‌های پرطرفدار
           </h2>
           <Link
             href="/search"
-            className="text-[10px] font-semibold text-brand-700"
+            className="text-[12px] font-semibold text-brand-700"
           >
             همهٔ محصولات
           </Link>
@@ -151,14 +154,13 @@ export default function Home() {
                 {categoryInitial(category.label)}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[11px] font-bold">
+                <span className="line-clamp-2 text-[13px] font-bold leading-5">
                   {category.label}
                 </span>
-                <span className="mt-0.5 block text-[9px] text-muted">
+                <span className="mt-0.5 block text-[11px] text-muted">
                   {category.hint}
                 </span>
               </span>
-              <ChevronLeftIcon className="size-3.5 text-muted/50 transition group-hover:text-brand-600" />
             </Link>
           ))}
         </div>
@@ -167,17 +169,17 @@ export default function Home() {
       <section className="rounded-card border border-line bg-surface p-4">
         <div className="flex items-center gap-2">
           <ScaleIcon className="size-4 text-brand-600" />
-          <h2 className="text-sm font-bold">مسیر تا تصمیم</h2>
+          <h2 className="text-base font-bold">مسیر تا تصمیم</h2>
         </div>
         <ol className="mt-3 space-y-2.5">
           {steps.map((step, index) => (
             <li key={step.title} className="flex items-start gap-2.5">
-              <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand-50 text-[9px] font-bold text-brand-700">
+              <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-brand-50 text-[11px] font-bold text-brand-700">
                 {new Intl.NumberFormat("fa-IR").format(index + 1)}
               </span>
               <div>
-                <p className="text-[11px] font-bold">{step.title}</p>
-                <p className="mt-0.5 text-[10px] leading-5 text-muted">
+                <p className="text-[13px] font-bold">{step.title}</p>
+                <p className="mt-0.5 text-[12px] leading-5 text-muted">
                   {step.text}
                 </p>
               </div>
@@ -187,11 +189,11 @@ export default function Home() {
       </section>
 
       <section className="rounded-card border border-warning/20 bg-warning/5 p-3.5">
-        <p className="flex items-center gap-1.5 text-[11px] font-bold text-warning">
+        <p className="flex items-center gap-1.5 text-[13px] font-bold text-warning">
           <PinIcon className="size-3.5" />
           دادهٔ واقعی ترب در حال استفاده است
         </p>
-        <p className="mt-1.5 text-[10px] leading-6 text-muted">
+        <p className="mt-1.5 text-[12px] leading-6 text-muted">
           ۶٬۴۷۶ فروشگاه، ۲۲۵٬۹۰۳ محصول و ۳۳۱٬۵۰۶ آفر. قیمت‌های ثبت‌شده ممکن
           است قدیمی باشند؛ ۱۵٬۵۹۱ آفر قیمت ندارد و تا تأیید فروشنده قابل اتکا
           نیستند.
@@ -200,7 +202,7 @@ export default function Home() {
 
       <HealthStatus />
 
-      <footer className="mt-auto text-center text-[10px] leading-6 text-muted">
+      <footer className="mt-auto text-center text-[12px] leading-6 text-muted">
         <p className="flex items-center justify-center gap-1">
           <CheckIcon className="size-3 text-success" />
           جست‌وجو و مقایسه بدون نیاز به LLM کار می‌کنند؛ دستیار در صورت خطا به جست‌وجوی مستقیم برمی‌گردد.

@@ -46,7 +46,7 @@ export function AssistantComposer({
             maxLength={500}
             placeholder="مثلاً: آیفون ۱۵ تا ۴۵ میلیون در ونک"
             aria-label="درخواست از دستیار"
-            className="max-h-28 min-h-9 flex-1 resize-none bg-transparent px-1.5 py-1.5 text-[11px] leading-6 outline-none placeholder:text-muted/70"
+            className="max-h-28 min-h-9 flex-1 resize-none bg-transparent px-1.5 py-1.5 text-[13px] leading-6 outline-none placeholder:text-muted/70"
           />
         </div>
         {busy ? (
@@ -69,7 +69,7 @@ export function AssistantComposer({
           </button>
         )}
       </form>
-      <p className="mx-auto mt-1.5 max-w-lg text-center text-[8px] text-muted">
+      <p className="mx-auto mt-1.5 max-w-lg text-center text-[10px] text-muted">
         قیمت‌ها ثبت‌شده‌اند؛ قبل از مراجعه موجودی را از فروشنده تأیید کن.
       </p>
     </div>

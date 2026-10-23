@@ -17,7 +17,7 @@ export function AgentThread({ messages, endRef }: AgentThreadProps) {
       {messages.map((message) =>
         message.role === "user" ? (
           <div key={message.id} className="flex justify-start">
-            <div className="max-w-[85%] rounded-2xl rounded-tr-md bg-ink px-3.5 py-2.5 text-[11px] leading-6 text-white">
+            <div className="max-w-[85%] rounded-2xl rounded-tr-md bg-ink px-3.5 py-2.5 text-[13px] leading-6 text-white">
               {message.content}
             </div>
           </div>
@@ -29,7 +29,7 @@ export function AgentThread({ messages, endRef }: AgentThreadProps) {
             <div className="min-w-0 flex-1">
               <div
                 className={cn(
-                  "rounded-2xl rounded-tl-md border px-3.5 py-2.5 text-[11px] leading-6",
+                  "rounded-2xl rounded-tl-md border px-3.5 py-2.5 text-[13px] leading-6",
                   message.error
                     ? "border-danger/20 bg-danger/5 text-danger"
                     : "border-line bg-surface text-ink",

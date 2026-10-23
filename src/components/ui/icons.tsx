@@ -121,3 +121,12 @@ export function SparkIcon(props: IconProps) {
     </IconBase>
   );
 }
+
+export function NavigationIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m3 11 18-8-8 18-2-8-8-2Z" />
+      <path d="m11 13 4-4" />
+    </IconBase>
+  );
+}

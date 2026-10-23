@@ -120,6 +120,7 @@ export async function* runAgent(
       shops: [],
       sellerChecks: [],
       alternatives: [],
+      visitPlans: [],
       error: null,
       lastAction: null,
     };
@@ -147,6 +148,7 @@ export async function* runAgent(
               "create_seller_check",
               "get_seller_check_status",
               "suggest_alternatives",
+              "get_visit_plan",
             ] as const,
           };
         }
@@ -274,7 +276,8 @@ export async function* runAgent(
     if (
       mode === "llm" &&
       (agentResult.sellerChecks?.length ?? 0) === 0 &&
-      (agentResult.alternatives?.length ?? 0) === 0
+      (agentResult.alternatives?.length ?? 0) === 0 &&
+      (agentResult.visitPlans?.length ?? 0) === 0
     ) {
       agentCache.set(cacheKey, {
         result: agentResult,

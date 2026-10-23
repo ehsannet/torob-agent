@@ -224,3 +224,48 @@
   alternatives are excluded from the 30-minute reply cache so links and status
   stay current; the rest of the Phase 3 queue/budget/fallback design is
   unchanged.
+
+- **D-037 — Structured addresses are extracted by deterministic rules first.**
+  `src/lib/address.ts` parses Persian address segments for mall/building, floor,
+  unit, street, and landmark, using normalized Arabic variants for matching but
+  returning the original display text. Explicit source fields always win over
+  extracted values; backtracking reference phrases such as «نرسیده به» are not
+  treated as mall names. Import and a non-destructive backfill share the same
+  merge function, so re-imports and backfills are idempotent.
+
+- **D-038 — LLM address leftovers are opt-in, source-checked, and cached.**
+  `npm run data:addresses -- --llm` sends only rows still missing mall/floor/unit
+  in small batches, validates every returned field against the address text, and
+  stores results in `.cache/address-extractions.json` (gitignored). The cache is
+  keyed by model + normalized address, so repeated runs do not call the model.
+  The default backfill is rules-only and deterministic.
+
+- **D-039 — Address confidence is a visit-readiness signal, not a geocode.**
+  Confidence combines structured components, landmark, and coordinates. Below
+  `0.65` the UI labels the address approximate and the visit plan warns the
+  buyer to confirm it. A structured mall address with a missing floor/unit gets
+  its own warning. Route links prefer coordinates and fall back to the raw
+  address via the Google Maps directions URL, requiring no map API key.
+
+- **D-040 — Visit plans are derived on read and never cached in the agent.**
+  `get_visit_plan` builds a plan from the same offer/shop rows used by search and
+  shop detail, including effective confirmed hours and latest stock. Open state,
+  closing time, and warnings are time-sensitive, so visit results are excluded
+  from the 30-minute reply cache. A visit-only turn returns
+  `AgentResult.kind = "visit"` with plan cards instead of fabricated products.
+
+- **D-041 — Visual tokens are centralized and inspired, not copied.** Torob's
+  light mobile web was measured at 390px, but only reusable intent (slate page,
+  white cards, 16px radius, dense Persian type, red actions, promo green accent)
+  was adopted. All runtime values live in `src/app/globals.css` under `@theme`
+  and are documented in `docs/design-tokens.md`. The app stays light-only,
+  self-hosts Vazirmatn, and uses red for actions/badges while prices are ink.
+  No Torob assets, logo, markup, or copy are reused.
+
+- **D-042 — PWA is installable now, offline caching is deferred.** A Persian
+  RTL manifest, any/maskable icons, an Apple icon, and a scope-root no-op service
+  worker provide a stable installable shell; registration is production-only.
+  Route-level `error.tsx`/`loading.tsx`, shared `PageStatus`/`RouteError`, and
+  the root `not-found` cover empty and failure paths consistently. Performance
+  was measured with CDP on the production build because Lighthouse is not
+  installed; the font is preloaded and no external CDN is required.

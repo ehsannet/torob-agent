@@ -7,7 +7,7 @@ import { TEHRAN_DISTRICTS } from "@/lib/tehran";
 import { cn } from "@/lib/cn";
 
 export const inputClass =
-  "w-full rounded-xl border border-line bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-300 focus:ring-2 focus:ring-brand-100";
+  "w-full rounded-xl border border-line bg-white px-3 py-2.5 text-base outline-none transition focus:border-brand-300 focus:ring-2 focus:ring-brand-100";
 
 const SORT_LABELS: Record<SortKey, string> = {
   relevance: "مرتبط‌ترین",
@@ -39,7 +39,7 @@ function FeatureToggle({
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
-        "flex items-center justify-between rounded-xl border px-3 py-2.5 text-xs font-semibold transition",
+        "flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm font-semibold transition",
         checked
           ? "border-brand-300 bg-brand-50 text-brand-700"
           : "border-line bg-white text-muted",
@@ -72,7 +72,7 @@ export function SortField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-bold">ترتیب نمایش</span>
+      <span className="mb-1.5 block text-sm font-bold">ترتیب نمایش</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value as SortKey)}
@@ -99,13 +99,13 @@ export function CategoryField({
 }) {
   return (
     <div>
-      <p className="mb-2 text-xs font-bold">دستهٔ کالا</p>
+      <p className="mb-2 text-sm font-bold">دستهٔ کالا</p>
       <div className="grid grid-cols-2 gap-1.5">
         <button
           type="button"
           onClick={() => onChange(null)}
           className={cn(
-            "rounded-xl border px-2.5 py-2 text-right text-[11px] transition",
+            "rounded-xl border px-2.5 py-2 text-right text-[13px] transition",
             value === null
               ? "border-brand-300 bg-brand-50 font-bold text-brand-700"
               : "border-line bg-white text-muted",
@@ -119,14 +119,14 @@ export function CategoryField({
             type="button"
             onClick={() => onChange(category.value)}
             className={cn(
-              "flex items-center justify-between gap-1 rounded-xl border px-2.5 py-2 text-[11px] transition",
+              "flex items-center justify-between gap-1 rounded-xl border px-2.5 py-2 text-[13px] transition",
               value === category.value
                 ? "border-brand-300 bg-brand-50 font-bold text-brand-700"
                 : "border-line bg-white text-muted",
             )}
           >
             <span>{category.label}</span>
-            <span className="text-[9px] opacity-60">
+            <span className="text-[11px] opacity-60">
               {formatNumber(category.count)}
             </span>
           </button>
@@ -149,10 +149,10 @@ export function BudgetField({
 }) {
   return (
     <div>
-      <p className="mb-2 text-xs font-bold">بودجه (تومان)</p>
+      <p className="mb-2 text-sm font-bold">بودجه (تومان)</p>
       <div className="grid grid-cols-2 gap-2">
         <label className="block">
-          <span className="mb-1 block text-[10px] text-muted">از</span>
+          <span className="mb-1 block text-[12px] text-muted">از</span>
           <input
             inputMode="numeric"
             value={minText}
@@ -162,7 +162,7 @@ export function BudgetField({
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-[10px] text-muted">تا</span>
+          <span className="mb-1 block text-[12px] text-muted">تا</span>
           <input
             inputMode="numeric"
             value={maxText}
@@ -185,7 +185,7 @@ export function DistrictField({
 }) {
   return (
     <div>
-      <p className="mb-2 text-xs font-bold">محله</p>
+      <p className="mb-2 text-sm font-bold">محله</p>
       <select
         value={value ?? ""}
         onChange={(event) => onChange(event.target.value || null)}
@@ -226,7 +226,7 @@ export function FeaturesField({
 }) {
   return (
     <div>
-      <p className="mb-2 text-xs font-bold">شرایط خرید</p>
+      <p className="mb-2 text-sm font-bold">شرایط خرید</p>
       <div className="grid grid-cols-2 gap-1.5">
         {FEATURES.map((feature) => (
           <FeatureToggle

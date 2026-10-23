@@ -36,6 +36,42 @@ seller behavior.
 - Every imported/generated row has `is_sample`. Real Torob rows import as
   `is_sample = false`; sample rows remain explicitly marked so they can never be
   mistaken for real shops or contacts.
+- Structured address fields (`mall_name`, `floor`, `unit`, `street`) live on
+  `shops` beside the raw `address_text` and `landmark`. They are derived from
+  the raw text at import/backfill time and are never reconstructed by the UI.
+
+### Structured addresses
+
+`src/lib/address.ts` extracts mall/building, floor, unit, street, and landmark
+from Persian address text. Explicit values win over extracted ones, so seller
+or import corrections are preserved. Matching normalizes Arabic `ي`/`ك` and
+digits, but display keeps the original wording.
+
+- Mall: `پاساژ`, `مجتمع`, `مرکز خرید/تجارت`, `ساختمان`, `برج`, `گالری`, and
+  `بازار` (but not `بازارچه`). Reference phrases such as `نرسیده به` and `جنب`
+  are skipped so they are not mistaken for a mall.
+- Floor: `طبقه …`, `همکف`, `زیرهمکف`.
+- Unit: `واحد`/`مغازه`/`حجره …`; `پلاک …` is a lower-priority fallback.
+- Street: a main street prefix first, then a plain segment, then a side street.
+- Confidence adds structured components, landmark, and coordinates. Values below
+  `0.65` are treated as approximate; `آدرس نامشخص` stays at `0.2`.
+
+`mergeAddressFields` is shared by the importer and the backfill. Backfill:
+
+```bash
+npm run data:addresses                 # dry run; prints changed/filled counts
+npm run data:addresses -- --apply      # update shops
+npm run data:addresses -- --apply --llm
+```
+
+`--llm` runs only rows that still lack mall/floor/unit, validates each returned
+field against the source address, and caches results in
+`.cache/address-extractions.json` (gitignored). The default path never calls an
+LLM.
+
+Current real-data result: mall 4,125 / floor 4,248 / unit 6,013 / street 6,424
+out of 6,476 shops; 287 approximate (`4.4%`). See
+`docs/data-quality-report.md`.
 
 ### Identifiers and units
 
@@ -168,9 +204,10 @@ IMPORT_URL=https://host/catalog.zip npm run import # zip (unzip required)
 ## Data quality
 
 ```bash
-npm run data:profile   # columns/types/samples -> docs/dataset-profile.md
-npm run data:quality   # row counts/gaps/price/coords -> docs/data-quality-report.md
-npm run db:report      # console summary
+npm run data:profile    # columns/types/samples -> docs/dataset-profile.md
+npm run data:quality    # row counts/gaps/addresses/prices -> docs/data-quality-report.md
+npm run data:addresses  # dry-run structured-address backfill
+npm run db:report       # console summary
 ```
 
 Current imported dataset: 6,476 shops, 225,903 products, 331,506 offers;

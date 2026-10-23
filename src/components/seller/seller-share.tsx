@@ -70,7 +70,7 @@ export function SellerShare({
       <button
         type="button"
         onClick={() => void copy()}
-        className="flex min-h-11 flex-1 items-center justify-center gap-1 rounded-xl border border-line bg-white px-3 text-[10px] font-bold text-muted"
+        className="flex min-h-11 flex-1 items-center justify-center gap-1 rounded-xl border border-line bg-white px-3 text-[12px] font-bold text-muted"
       >
         {copied ? <CheckIcon className="size-3.5 text-success" /> : null}
         {copied ? "کپی شد" : "کپی لینک"}
@@ -79,7 +79,7 @@ export function SellerShare({
         <button
           type="button"
           onClick={() => void share()}
-          className="flex min-h-11 flex-1 items-center justify-center gap-1 rounded-xl bg-ink px-3 text-[10px] font-bold text-white"
+          className="flex min-h-11 flex-1 items-center justify-center gap-1 rounded-xl bg-ink px-3 text-[12px] font-bold text-white"
         >
           <SparkIcon className="size-3.5" />
           ارسال لینک

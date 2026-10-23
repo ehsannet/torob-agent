@@ -34,20 +34,20 @@ export function BrandHeader({
         )}
         <Link href="/" className="leading-tight">
           <span className="block text-lg font-extrabold">ترب‌یار</span>
-          <span className="block text-[11px] text-muted">دستیار خرید حضوری</span>
+          <span className="block text-[13px] text-muted">دستیار خرید حضوری</span>
         </Link>
       </div>
       <div className="flex items-center gap-2">
         {children}
         <Link
           href="/assistant"
-          className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[10px] font-bold text-brand-700"
+          className="inline-flex items-center gap-1 rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[12px] font-bold text-brand-700"
         >
           <SparkIcon className="size-3" />
           دستیار
         </Link>
-        <span className="rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[10px] font-semibold text-brand-700">
-          فاز ۴
+        <span className="rounded-full border border-brand-200 bg-white/70 px-2.5 py-1 text-[12px] font-semibold text-brand-700">
+          دمو
         </span>
       </div>
     </header>

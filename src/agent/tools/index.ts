@@ -4,6 +4,7 @@ import { createFindShopsTool } from "./find-shops";
 import { createSearchProductsTool } from "./search-products";
 import { createSellerCheckTool } from "./create-seller-check";
 import { getSellerCheckStatusTool } from "./get-seller-check-status";
+import { getVisitPlanTool } from "./get-visit-plan";
 import { suggestAlternativesTool } from "./suggest-alternatives";
 
 export function createAgentTools(context: AgentToolContext) {
@@ -14,6 +15,7 @@ export function createAgentTools(context: AgentToolContext) {
     create_seller_check: createSellerCheckTool(context),
     get_seller_check_status: getSellerCheckStatusTool(context),
     suggest_alternatives: suggestAlternativesTool(context),
+    get_visit_plan: getVisitPlanTool(context),
   };
 }
 

@@ -45,29 +45,29 @@ export function CompareProductColumn({
           {categoryInitial(group.product.category)}
         </div>
         <div className="min-w-0">
-          <p className="text-[9px] font-semibold text-brand-600">
+          <p className="text-[11px] font-semibold text-brand-600">
             {group.product.brand ?? group.product.category}
           </p>
-          <h2 className="mt-0.5 line-clamp-3 text-xs font-extrabold leading-5">
+          <h2 className="mt-0.5 line-clamp-3 text-sm font-extrabold leading-5">
             {group.product.titleFa}
           </h2>
         </div>
       </div>
 
       {isWinner ? (
-        <span className="mt-2 w-fit rounded-full bg-brand-500 px-2 py-0.5 text-[9px] font-bold text-white">
+        <span className="mt-2 w-fit rounded-full bg-brand-500 px-2 py-0.5 text-[11px] font-bold text-white">
           پیشنهاد ترب‌یار
         </span>
       ) : null}
 
-      <p className="mt-3 text-lg font-black text-brand-600">
+      <p className="mt-3 text-lg font-black text-ink">
         {group.priceMin === null ? "بدون قیمت" : formatToman(group.priceMin)}
       </p>
-      <p className="mt-0.5 text-[9px] text-muted">
+      <p className="mt-0.5 text-[11px] text-muted">
         {formatPriceRange(group.priceMin, group.priceMax)}
       </p>
 
-      <dl className="mt-3 space-y-1.5 border-t border-line pt-2.5 text-[10px]">
+      <dl className="mt-3 space-y-1.5 border-t border-line pt-2.5 text-[12px]">
         <div className="flex items-center justify-between gap-2">
           <dt className="text-muted">فروشگاه</dt>
           <dd className="font-semibold">{formatNumber(group.shopCount)}</dd>
@@ -106,13 +106,13 @@ export function CompareProductColumn({
       {best ? (
         <div className="mt-3 rounded-xl border border-line bg-page/60 p-2.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="flex min-w-0 items-center gap-1 text-[10px] font-bold">
+            <p className="flex min-w-0 items-center gap-1 text-[12px] font-bold">
               <StoreIcon className="size-3 shrink-0 text-muted" />
               <span className="truncate">{best.shopName}</span>
             </p>
             <span
               className={cn(
-                "shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-semibold",
+                "shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-semibold",
                 OPEN_CLASSES[best.openStatus.state],
               )}
             >
@@ -120,11 +120,11 @@ export function CompareProductColumn({
             </span>
           </div>
           <div className="mt-1.5 flex items-center justify-between">
-            <p className="text-[11px] font-extrabold">
+            <p className="text-[13px] font-extrabold">
               {formatToman(best.priceToman)}
             </p>
             {best.distanceKm !== null ? (
-              <p className="flex items-center gap-1 text-[9px] text-muted">
+              <p className="flex items-center gap-1 text-[11px] text-muted">
                 <PinIcon className="size-3" />
                 {formatDistanceKm(best.distanceKm)}
               </p>

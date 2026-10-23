@@ -26,7 +26,8 @@
     "data:profile": "node --env-file-if-exists=.env --import tsx scripts/profile-dataset.ts",
     "import": "node scripts/run-import.mjs",
     "build:import": "esbuild scripts/import-dataset.ts --bundle --platform=node --format=esm --target=node22 --outfile=dist/import.mjs --external:pg --external:pg-native",
-    "data:quality": "node --env-file-if-exists=.env --import tsx scripts/data-quality-report.ts"
+    "data:quality": "node --env-file-if-exists=.env --import tsx scripts/data-quality-report.ts",
+    "data:addresses": "node --env-file-if-exists=.env --import tsx scripts/backfill-addresses.ts"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.75",

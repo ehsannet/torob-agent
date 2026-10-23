@@ -13,7 +13,7 @@ export function UsageBadge({
     return (
       <span
         className={cn(
-          "rounded-full border border-line bg-white/70 px-2.5 py-1 text-[9px] text-muted",
+          "rounded-full border border-line bg-white/70 px-2.5 py-1 text-[11px] text-muted",
           className,
         )}
       >
@@ -35,7 +35,7 @@ export function UsageBadge({
       )}
       title={`${formatPersianNumber(usage.totalTokens)} توکن مصرف‌شده`}
     >
-      <div className="flex items-center justify-between gap-2 text-[9px]">
+      <div className="flex items-center justify-between gap-2 text-[11px]">
         <span className="font-bold text-ink">
           ${toPersianDigits(usage.estimatedCostUsd.toFixed(4))}
         </span>

@@ -247,69 +247,94 @@ export async function loadGroupedProductPage(
   };
 }
 
+const OFFER_SELECT = `
+  select
+    p.id as product_id,
+    p.title_fa,
+    p.title_en,
+    p.brand,
+    p.category,
+    p.specs,
+    p.images,
+    o.id as offer_id,
+    o.price as recorded_price,
+    o.price_unit,
+    o.last_price_change_at,
+    o.warranty_provider,
+    o.warranty_duration_months,
+    s.id as shop_id,
+    s.name as shop_name,
+    s.address_text,
+    s.mall_name,
+    s.floor,
+    s.unit,
+    s.street,
+    s.landmark,
+    s.address_confidence,
+    s.latitude,
+    s.longitude,
+    s.weekly_hours,
+    shop_obs.confirmed_hours,
+    shop_obs.confirmed_at as hours_confirmed_at,
+    s.accepts_torob_pay,
+    s.offers_installments,
+    s.accepts_kalabarg,
+    s.has_fast_delivery,
+    obs.stock_status,
+    obs.confirmed_price,
+    obs.confirmed_at
+  from offers o
+  join products p on p.id = o.product_id
+  join shops s on s.id = o.shop_id
+  left join lateral (
+    select oo.stock_status, oo.confirmed_price, oo.confirmed_at
+    from offer_observations oo
+    where oo.offer_id = o.id
+    order by oo.confirmed_at desc
+    limit 1
+  ) obs on true
+  left join lateral (
+    select so.confirmed_hours, so.confirmed_at
+    from shop_observations so
+    where so.shop_id = s.id and so.confirmed_hours is not null
+    order by so.confirmed_at desc
+    limit 1
+  ) shop_obs on true
+`;
+
 export async function loadOfferRows(
   filters: SearchFilters,
   productIds?: string[],
 ): Promise<OfferRow[]> {
   const values: unknown[] = [];
   const where = buildWhere(filters, productIds, values);
-  const sql = `
-    select
-      p.id as product_id,
-      p.title_fa,
-      p.title_en,
-      p.brand,
-      p.category,
-      p.specs,
-      p.images,
-      o.id as offer_id,
-      o.price as recorded_price,
-      o.price_unit,
-      o.last_price_change_at,
-      o.warranty_provider,
-      o.warranty_duration_months,
-      s.id as shop_id,
-      s.name as shop_name,
-      s.address_text,
-      s.mall_name,
-      s.floor,
-      s.unit,
-      s.street,
-      s.landmark,
-      s.address_confidence,
-      s.latitude,
-      s.longitude,
-      s.weekly_hours,
-      shop_obs.confirmed_hours,
-      shop_obs.confirmed_at as hours_confirmed_at,
-      s.accepts_torob_pay,
-      s.offers_installments,
-      s.accepts_kalabarg,
-      s.has_fast_delivery,
-      obs.stock_status,
-      obs.confirmed_price,
-      obs.confirmed_at
-    from offers o
-    join products p on p.id = o.product_id
-    join shops s on s.id = o.shop_id
-    left join lateral (
-      select oo.stock_status, oo.confirmed_price, oo.confirmed_at
-      from offer_observations oo
-      where oo.offer_id = o.id
-      order by oo.confirmed_at desc
-      limit 1
-    ) obs on true
-    left join lateral (
-      select so.confirmed_hours, so.confirmed_at
-      from shop_observations so
-      where so.shop_id = s.id and so.confirmed_hours is not null
-      order by so.confirmed_at desc
-      limit 1
-    ) shop_obs on true
-    ${where}
-    order by p.id asc, o.price asc nulls last, s.id asc
-  `;
-
-  const result = await getPool().query<OfferRow>(sql, values);
+  const result = await getPool().query<OfferRow>(
+    `${OFFER_SELECT} ${where} order by p.id asc, o.price asc nulls last, s.id asc`,
+    values,
+  );
   return result.rows;
+}
+
+export async function loadShopOfferRows(
+  shopId: string,
+  limit = 24,
+): Promise<OfferRow[]> {
+  const result = await getPool().query<OfferRow>(
+    `${OFFER_SELECT}
+     where s.id = $1
+     order by o.price asc nulls last, p.id asc
+     limit $2`,
+    [shopId, limit],
+  );
+  return result.rows;
+}
+
+export async function loadOfferRowById(
+  offerId: string,
+): Promise<OfferRow | null> {
+  const result = await getPool().query<OfferRow>(
+    `${OFFER_SELECT} where o.id = $1 limit 1`,
+    [offerId],
+  );
+  return result.rows[0] ?? null;
 }

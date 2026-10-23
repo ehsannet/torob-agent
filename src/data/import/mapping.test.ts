@@ -51,6 +51,8 @@ describe("mapRawCatalog", () => {
     const shop = catalog.shops[0];
     expect(shop.nameNormalized).toBe("فروشگاه نمونه");
     expect(shop.addressConfidence).toBe(0.85);
+    expect(shop.street).toBe("خیابان ولیعصر");
+    expect(shop.unit).toBe("پلاک ۱۲");
     expect(shop.acceptsTorobPay).toBe(true);
     expect(shop.latitude).toBeCloseTo(35.7573);
     expect(shop.weeklyHours).toEqual({
@@ -121,6 +123,11 @@ describe("mapRawCatalog", () => {
     expect(shop.activityCategory).toBe("گوشی موبایل");
     expect(shop.phone).toBe("۰۲۱۲۶۴۶۷۱۸۰");
     expect(shop.landmark).toBe("شیخ هادی");
+    expect(shop.mallName).toBe("پاساژ علالدین");
+    expect(shop.floor).toBe("۶");
+    expect(shop.unit).toBe("واحد ۶۲۲");
+    expect(shop.street).toBe("خیابان جمهوری");
+    expect(shop.addressConfidence).toBeGreaterThanOrEqual(0.9);
     expect(shop.instagram).toBe("https://instagram.com/shop");
     expect(shop.website).toBe("https://shop.example");
     expect(shop.acceptsTorobPay).toBe(true);

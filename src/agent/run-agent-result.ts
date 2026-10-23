@@ -60,6 +60,24 @@ export function pickResult(
     };
   }
 
+  if (
+    !result &&
+    toolContext.visitPlans.length > 0
+  ) {
+    result = {
+      kind: "visit",
+      filters: toolContext.baseFilters,
+      products: [],
+      shops: [],
+      recommendation: null,
+      compareIds: [],
+      totalGroups: 0,
+      totalOffers: 0,
+      mode: "llm",
+      tookMs,
+    };
+  }
+
   if (!result) return null;
   return {
     ...result,
@@ -70,6 +88,10 @@ export function pickResult(
     alternatives:
       toolContext.alternatives.length > 0
         ? toolContext.alternatives
+        : undefined,
+    visitPlans:
+      toolContext.visitPlans.length > 0
+        ? toolContext.visitPlans
         : undefined,
   };
 }

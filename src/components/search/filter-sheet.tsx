@@ -144,12 +144,12 @@ export function FilterSheet({
       <button
         type="button"
         onClick={openSheet}
-        className="flex shrink-0 items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2.5 text-xs font-bold text-ink shadow-sm transition hover:border-brand-200"
+        className="flex shrink-0 items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm font-bold text-ink shadow-sm transition hover:border-brand-200"
       >
         <FilterIcon className="size-4 text-brand-600" />
         فیلترها
         {activeCount > 0 ? (
-          <span className="grid size-5 place-items-center rounded-full bg-brand-500 text-[9px] text-white">
+          <span className="grid size-5 place-items-center rounded-full bg-brand-500 text-[11px] text-white">
             {formatNumber(activeCount)}
           </span>
         ) : null}
@@ -171,10 +171,10 @@ export function FilterSheet({
           >
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
               <div>
-                <h2 id="filter-title" className="text-sm font-extrabold">
+                <h2 id="filter-title" className="text-base font-extrabold">
                   فیلتر و مرتب‌سازی
                 </h2>
-                <p className="mt-0.5 text-[10px] text-muted">
+                <p className="mt-0.5 text-[12px] text-muted">
                   {formatNumber(totalGroups)} محصول در نتایج فعلی
                 </p>
               </div>
@@ -234,7 +234,7 @@ export function FilterSheet({
                 <FeaturesField filters={draft} onChange={update} />
 
                 {error ? (
-                  <p className="rounded-xl bg-danger/10 px-3 py-2 text-[11px] text-danger">
+                  <p className="rounded-xl bg-danger/10 px-3 py-2 text-[13px] text-danger">
                     {error}
                   </p>
                 ) : null}
@@ -244,13 +244,13 @@ export function FilterSheet({
                 <button
                   type="button"
                   onClick={resetAll}
-                  className="rounded-xl border border-line px-3 py-2.5 text-xs font-semibold text-muted"
+                  className="rounded-xl border border-line px-3 py-2.5 text-sm font-semibold text-muted"
                 >
                   پاک کردن
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-brand-600"
+                  className="flex-1 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-brand-600"
                 >
                   نمایش نتایج
                 </button>

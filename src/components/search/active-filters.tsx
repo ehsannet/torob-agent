@@ -110,7 +110,7 @@ export function ActiveFilters({ filters }: ActiveFiltersProps) {
           key={chip.key}
           href={chip.href}
           scroll={false}
-          className="flex items-center gap-1 rounded-full border border-brand-200 bg-brand-50 px-2 py-1 text-[10px] font-semibold text-brand-700"
+          className="flex items-center gap-1 rounded-full border border-brand-200 bg-brand-50 px-2 py-1 text-[12px] font-semibold text-brand-700"
         >
           {chip.label}
           <CloseIcon className="size-3" />
@@ -120,7 +120,7 @@ export function ActiveFilters({ filters }: ActiveFiltersProps) {
         <Link
           href={clearAll}
           scroll={false}
-          className="px-1 text-[10px] font-semibold text-muted underline underline-offset-4"
+          className="px-1 text-[12px] font-semibold text-muted underline underline-offset-4"
         >
           پاک کردن همه
         </Link>

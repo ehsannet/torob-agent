@@ -120,5 +120,23 @@ Response outline:
   a query/category it shows a paginated browse view rather than scanning every
   offer.
 - `/compare` — side-by-side columns, winner banner, full comparison table.
+- `/shops/[id]` — shop detail with structured address, open status, weekly
+  hours, confirmed-hours badge, route link, visit warnings, features/contact,
+  and the shop's offers.
 
-All three routes work with the database only; no model configuration is needed.
+All routes work with the database only; no model configuration is needed.
+
+## Visit planning
+
+Every shop offer carries `mallName`, `floor`, `unit`, `street`, `landmark`, and
+`addressConfidence` from `shops`. Cards and `/shops/[id]` display a composed
+address line rather than only the raw text. Visit plans are derived on read in
+`src/lib/visit-plan.ts`:
+
+- `addressLine`, `addressParts`, and `approximateAddress` (`confidence < 0.65`);
+- `routeUrl` — Google Maps directions, using coordinates when present;
+- `openState`, `openLabel`, `closesAt`, and `hoursConfirmedAt`;
+- warnings for out-of-stock/unknown stock, approximate address, missing
+  floor/unit in a mall, closed/unknown hours, closing soon, and stale price.
+
+The agent exposes the same plan through `get_visit_plan`; see `docs/agent.md`.

@@ -47,7 +47,7 @@ export function AssistantView() {
           <div className="relative">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold text-brand-700">
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-[12px] font-bold text-brand-700">
                   <SparkIcon className="size-3" />
                   دستیار خرید حضوری
                 </span>
@@ -59,11 +59,11 @@ export function AssistantView() {
               </div>
               <UsageBadge usage={usage} className="shrink-0" />
             </div>
-            <p className="mt-2 text-[11px] leading-6 text-muted">
+            <p className="mt-2 text-[13px] leading-6 text-muted">
               بودجه، محله و مدل را بنویس. پاسخ فقط بر اساس قیمت‌های ثبت‌شده و
               فاصلهٔ فروشگاه‌های تهران ساخته می‌شود.
             </p>
-            <p className="mt-2 flex items-center gap-1 text-[9px] text-muted">
+            <p className="mt-2 flex items-center gap-1 text-[11px] text-muted">
               <span className="size-1.5 rounded-full bg-success" />
               {hasLocation
                 ? "فیلتر موقعیت مکانی فعلی فعال است"
@@ -76,7 +76,7 @@ export function AssistantView() {
 
         {messages.length === 0 ? (
           <section aria-label="نمونه درخواست‌ها">
-            <p className="mb-2 text-[10px] font-bold text-muted">
+            <p className="mb-2 text-[12px] font-bold text-muted">
               یک نمونه را بزن یا خودت بنویس:
             </p>
             <div className="flex flex-wrap gap-2">
@@ -85,7 +85,7 @@ export function AssistantView() {
                   key={prompt}
                   type="button"
                   onClick={() => void send(prompt)}
-                  className="rounded-full border border-line bg-surface px-3 py-2 text-[10px] font-semibold text-muted transition hover:border-brand-200 hover:text-brand-700"
+                  className="rounded-full border border-line bg-surface px-3 py-2 text-[12px] font-semibold text-muted transition hover:border-brand-200 hover:text-brand-700"
                 >
                   {prompt}
                 </button>

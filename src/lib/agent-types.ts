@@ -7,6 +7,7 @@ import type {
   SearchFilters,
   StockStatus,
 } from "./search-types";
+import type { VisitPlan } from "./visit-plan";
 
 export type AgentContext = {
   district: string | null;
@@ -49,6 +50,7 @@ export type AgentProduct = {
 
 export type AgentShop = {
   offerId: string;
+  shopId: string;
   name: string;
   distanceKm: number | null;
   openState: OpenState;
@@ -64,7 +66,7 @@ export type AgentRecommendation = {
 };
 
 export type AgentResult = {
-  kind: "search" | "compare" | "seller";
+  kind: "search" | "compare" | "seller" | "visit";
   filters: SearchFilters;
   products: AgentProduct[];
   shops: AgentShop[];
@@ -76,6 +78,7 @@ export type AgentResult = {
   fallbackReason?: string;
   sellerChecks?: SellerCheckSummary[];
   alternatives?: SellerAlternative[];
+  visitPlans?: VisitPlan[];
   tookMs: number;
 };
 

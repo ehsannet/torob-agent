@@ -20,12 +20,12 @@ export function CompareBar({ filters }: { filters: SearchFilters }) {
           <ScaleIcon className="size-5" />
         </span>
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="text-xs font-bold">
+          <p className="text-sm font-bold">
             {ready
               ? `${formatNumber(selected.length)} محصول انتخاب شده`
               : "یک محصول دیگر انتخاب کن"}
           </p>
-          <p className="mt-0.5 truncate text-[10px] text-white/60">
+          <p className="mt-0.5 truncate text-[12px] text-white/60">
             {ready
               ? "قیمت، فاصله و شفافیت را کنار هم ببین"
               : "برای مقایسه حداقل دو محصول لازم است"}
@@ -34,12 +34,12 @@ export function CompareBar({ filters }: { filters: SearchFilters }) {
         {ready ? (
           <Link
             href={compareHref(selected, filters)}
-            className="shrink-0 rounded-xl bg-brand-500 px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-600"
+            className="shrink-0 rounded-xl bg-brand-500 px-3 py-2 text-sm font-bold text-white transition hover:bg-brand-600"
           >
             مقایسه
           </Link>
         ) : (
-          <span className="shrink-0 rounded-xl bg-white/10 px-3 py-2 text-xs font-bold text-white/50">
+          <span className="shrink-0 rounded-xl bg-white/10 px-3 py-2 text-sm font-bold text-white/50">
             مقایسه
           </span>
         )}

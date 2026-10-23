@@ -1,4 +1,4 @@
-# Data-grounded shopping agent (Phase 3 + Phase 4 tools)
+# Data-grounded shopping agent (Phase 3–5 tools)
 
 The assistant turns a Persian free-text request into the existing Phase 2 search
 filters, runs deterministic catalog tools, and streams a short explanation. The
@@ -86,6 +86,9 @@ the shop list to the result. This keeps the cards and prose aligned.
   and alternatives.
 - `suggest_alternatives`: by offer ID or token; returns same-product and similar
   in-stock options with reasons.
+- `get_visit_plan`: offer ID or shop ID; returns the structured address, route
+  URL, open state, confirmed-hours flag, and visit warnings. The plan is derived
+  from the same search/shop-detail services and is not compiled by the model.
 
 ## Configuration
 
@@ -121,4 +124,6 @@ second model call; missing key returns fallback; queue timeout and lock release;
 browser flow at `/assistant` with district context, streamed text, result card,
 search link, and usage badge. Seller smoke: an explicit request created two
 tokenized demo checks; a status-only result is represented as `kind: "seller"`
-and skips the product/compare cards.
+and skips the product/compare cards. Visit smoke: an address/visit request
+returns `visitPlans` with a route URL and warnings, and a visit-only turn is
+represented as `kind: "visit"`.

@@ -4,12 +4,16 @@ Persian (RTL), mobile-first assistant for buying in person from shops in Tehran.
 Built with Next.js (App Router), TypeScript, Tailwind CSS, PostgreSQL, Drizzle
 ORM, and the Vercel AI SDK.
 
-> Current status: **Phase 4 complete + real Torob dataset imported**. Search and
+> Current status: **Phase 6 complete + real Torob dataset imported**. Search and
 > compare remain deterministic and usable without the LLM; the agent adds
 > free-text intent parsing, tool calls, streaming, usage budgets, cache, and
 > fallback. Sellers can confirm stock, price, hours, and warranty through
-> tokenized links, with a deterministic demo simulator. See `PROGRESS.md`,
-> `docs/search.md`, `docs/agent.md`, and `docs/seller-loop.md`.
+> tokenized links, with a deterministic demo simulator. Shops expose structured
+> Persian addresses, route links, open status, and visit warnings. The UI now
+> follows a documented Torob-inspired token set, ships route-level
+> empty/error/loading states and a downloadable PWA shell. See `PROGRESS.md`,
+> `docs/design-tokens.md`, `docs/search.md`, `docs/agent.md`, and
+> `docs/seller-loop.md`.
 
 ## Requirements
 
@@ -29,8 +33,9 @@ npm run dev
 ```
 
 Open http://localhost:3000. Search is at `/search`, the assistant at
-`/assistant`, seller links at `/s/<token>`, the demo simulator at
-`/dev/seller-simulator`, and the health endpoint at `/api/health`.
+`/assistant`, shop details at `/shops/<id>`, seller links at `/s/<token>`, the
+demo simulator at `/dev/seller-simulator`, and the health endpoint at
+`/api/health`.
 
 `DATABASE_URL` must point to a reachable Postgres instance for the health
 endpoint to report `db.status = "up"`. If it is missing, the app still runs and
@@ -142,6 +147,39 @@ stays «نامشخص» until an observation exists.
 - `viewed_at` is added by `drizzle/0001_seller_check_viewed_at.sql`; Compose
   applies it at startup before serving.
 
+## Visit planning (Phase 5)
+
+Every shop card and `/shops/[id]` shows a composed structured address (mall,
+floor, unit, street, landmark), the current open state, and a Google Maps route
+link. The shop detail page also shows weekly hours, confirmed-hours status,
+visit warnings, contact/features, and that shop's offers.
+
+- Address fields are extracted deterministically from Persian text at import
+  time and by a non-destructive backfill. `npm run data:addresses` reports
+  changes; add `--apply` to write, and `--llm` to fill only the remaining
+  unstructured rows with a source-checked, cached model pass.
+- Visit warnings cover out-of-stock/unknown stock, approximate address, missing
+  floor/unit in a mall, closed/unknown hours, closing soon, and stale prices.
+- The assistant's `get_visit_plan` tool returns the same plan for an offer or
+  shop; visit-only results render as `kind: "visit"` and are not cached.
+
+## Polish, states, and PWA (Phase 6)
+
+The visual language was matched to Torob's light mobile web and recorded in
+`docs/design-tokens.md`; all runtime values live in the `@theme` block of
+`src/app/globals.css`.
+
+- Shared `PageStatus` and `RouteError` components, route-level `error.tsx` and
+  `loading.tsx` files, a root `not-found.tsx`, and skeletons on search, compare,
+  shop, seller, and home routes.
+- `/manifest.webmanifest`, maskable/any icons, `apple-icon.png`, and a no-op
+  service worker registered only in production (`public/sw.js`,
+  `src/components/pwa-register.tsx`). The app is installable; offline caching is
+  intentionally out of scope for this phase.
+- Performance check via Chrome DevTools Protocol on the production build: home
+  TTFB ≈12ms and FCP ≈128ms, search TTFB ≈29ms with data ready ≈0.7s, and 0
+  installability errors. No external font/CDN requests.
+
 ## Environment variables
 
 See `.env.example`. `.env` is git-ignored and must never be committed.
@@ -181,6 +219,7 @@ See `.env.example`. `.env` is git-ignored and must never be committed.
 | `npm run import -- --dir <path>` | Import a specific CSV directory |
 | `npm run data:profile` | Write `docs/dataset-profile.md` |
 | `npm run data:quality` | Write `docs/data-quality-report.md` from the database |
+| `npm run data:addresses` | Backfill structured addresses (dry-run; `--apply`, `--llm`) |
 | `npm run db:seed` | Regenerate the sample catalog |
 | `npm run db:seed:if-empty` | Seed only when the catalog is empty |
 | `npm run db:report` | Console catalog counts and data-quality gaps |

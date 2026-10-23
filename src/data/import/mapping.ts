@@ -1,3 +1,4 @@
+import { extractAddressDetails } from "../../lib/address";
 import { normalizePersian } from "../../lib/persian";
 import type { CatalogData } from "../../db/replace";
 import type { NewOffer, NewProduct, NewShop } from "../../db/schema";
@@ -184,9 +185,9 @@ function sampleFlag(row: Row, aliases: readonly string[]): boolean {
   return asBoolean(read(row, aliases)) ?? false;
 }
 
-function confidenceValue(row: Row): number {
+function confidenceValue(row: Row): number | null {
   const parsed = asNumber(read(row, SHOP_CONFIDENCE));
-  if (parsed === null) return 0.5;
+  if (parsed === null) return null;
   const normalized = parsed > 1 ? parsed / 100 : parsed;
   return Math.min(1, Math.max(0, normalized));
 }
@@ -197,6 +198,18 @@ export function mapShopRow(row: Row, index: number): NewShop {
   const addressText = asString(read(row, SHOP_ADDRESS)) ?? "آدرس نامشخص";
   const latitude = asNumber(read(row, SHOP_LAT));
   const longitude = asNumber(read(row, SHOP_LNG));
+  const landmark = asString(read(row, SHOP_LANDMARK));
+  const extracted = extractAddressDetails({
+    addressText,
+    latitude,
+    longitude,
+    landmark,
+  });
+  const sourceConfidence = confidenceValue(row);
+  const addressConfidence =
+    addressText === "آدرس نامشخص"
+      ? 0.2
+      : (sourceConfidence ?? extracted.confidence);
 
   return {
     id: asString(read(row, SHOP_ID)) ?? `import-shop-${String(index + 1).padStart(4, "0")}`,
@@ -212,13 +225,13 @@ export function mapShopRow(row: Row, index: number): NewShop {
     licenses: asStringArray(read(row, SHOP_LICENSES)),
     addressText,
     addressNormalized: normalizePersian(addressText),
-    mallName: asString(read(row, SHOP_MALL)),
-    floor: asString(read(row, SHOP_FLOOR)),
-    unit: asString(read(row, SHOP_UNIT)),
-    street: asString(read(row, SHOP_STREET)),
-    landmark: asString(read(row, SHOP_LANDMARK)),
+    mallName: asString(read(row, SHOP_MALL)) ?? extracted.mallName,
+    floor: asString(read(row, SHOP_FLOOR)) ?? extracted.floor,
+    unit: asString(read(row, SHOP_UNIT)) ?? extracted.unit,
+    street: asString(read(row, SHOP_STREET)) ?? extracted.street,
+    landmark,
     locationNotes: asString(read(row, SHOP_LOCATION_NOTES)),
-    addressConfidence: addressText === "آدرس نامشخص" ? 0.2 : confidenceValue(row),
+    addressConfidence,
     latitude,
     longitude,
     weeklyHours: parseHours(read(row, SHOP_HOURS)),

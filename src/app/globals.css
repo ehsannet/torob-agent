@@ -11,24 +11,31 @@
 @theme {
   --font-sans: "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
 
+  /* Torob-inspired light palette; keep all theme values here. */
   --color-brand-50: #fff1f2;
-  --color-brand-100: #ffe1e5;
-  --color-brand-200: #ffc7cf;
-  --color-brand-500: #ef4056;
-  --color-brand-600: #dc263f;
-  --color-brand-700: #b81b32;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-300: #fda4af;
+  --color-brand-500: #c81e27;
+  --color-brand-600: #ae1f27;
+  --color-brand-700: #8f1920;
 
-  --color-ink: #1c1c1e;
-  --color-muted: #6f6f78;
-  --color-line: #e9e9ee;
-  --color-page: #f7f7f9;
+  --color-ink: #1e293b;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-page: #f1f5f9;
   --color-surface: #ffffff;
 
   --color-success: #15803d;
   --color-warning: #b45309;
   --color-danger: #b91c1c;
+  --color-accent: #a8ef77;
+  --color-accent-ink: #0f3d01;
 
-  --radius-card: 1.25rem;
+  --radius-card: 1rem;
+  --radius-field: 0.75rem;
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04);
+  --shadow-float: 0 12px 30px -12px rgb(15 23 42 / 0.28);
 }
 
 @keyframes fade-in {
@@ -57,13 +64,13 @@
   }
 
   body {
-    background:
-      radial-gradient(120% 70% at 50% -10%, var(--color-brand-50) 0%, transparent 62%),
-      var(--color-page);
+    background: var(--color-page);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 14px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    color-scheme: light;
   }
 
   button,

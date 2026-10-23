@@ -14,11 +14,11 @@ export function SellerAlternatives({
   if (alternatives.length === 0) return null;
   return (
     <section className="mt-3 rounded-xl border border-brand-100 bg-brand-50/50 p-3">
-      <p className="flex items-center gap-1 text-[10px] font-bold text-brand-700">
+      <p className="flex items-center gap-1 text-[12px] font-bold text-brand-700">
         <SparkIcon className="size-3.5" />
         گزینه‌های جایگزین
       </p>
-      <p className="mt-1 text-[9px] leading-4 text-muted">
+      <p className="mt-1 text-[11px] leading-4 text-muted">
         این پیشنهادها از داده‌های ثبت‌شده ساخته شده‌اند؛ موجودی آن‌ها تأیید نشده است.
       </p>
       <ul className="mt-2 space-y-2">
@@ -29,18 +29,18 @@ export function SellerAlternatives({
           >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="line-clamp-1 text-[10px] font-bold">
+                <p className="line-clamp-1 text-[12px] font-bold">
                   {alternative.productTitle}
                 </p>
-                <p className="mt-0.5 line-clamp-1 text-[9px] text-muted">
+                <p className="mt-0.5 line-clamp-1 text-[11px] text-muted">
                   {alternative.shopName} · {alternative.reason}
                 </p>
               </div>
-              <span className="shrink-0 text-[10px] font-bold text-brand-600">
+              <span className="shrink-0 text-[12px] font-bold text-brand-600">
                 {formatToman(alternative.priceToman)}
               </span>
             </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[9px] text-muted">
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted">
               <span
                 className={cn(
                   alternative.stockStatus === "in_stock"
